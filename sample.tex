@@ -1,0 +1,56 @@
+\documentclass[margin=0px]{article}
+
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+\newenvironment{tetel}[1]{\paragraph{#1 \\}}{}
+% A dokument itt kezdődik
+
+\title{Záróvizsga tételsor \\ \large 0. Példa tétel}
+\date{}
+\author{Gipsz Jakab}
+
+\begin{document}
+
+	\maketitle
+	
+	\begin{tetel}{Tétel címe}
+			Tétel leírása
+	\end{tetel}
+	
+	
+	\section{Szekció 1}
+	
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae ultricies libero. Donec euismod tellus quis ante sollicitudin, in interdum arcu semper. Donec eu molestie nulla. Fusce at libero posuere, ultrices neque at, iaculis tellus. Cras in arcu erat. Praesent in sapien fermentum, varius neque non, fringilla diam. Morbi tristique mauris at turpis molestie, id dignissim lorem posuere. Phasellus suscipit purus quam, imperdiet condimentum dolor finibus eu. \textbf{Aliquam} \textit{erat} \underline{volutpat}. Ut porttitor augue quis mauris imperdiet tristique.
+	\begin{itemize}
+		\item Elem1:
+			Szöveg az elem1-hez.
+		\item Elem2 \\
+			Szöveg az elem2-höz.
+	\end{itemize}
+	
+	\subsection{Alszekció 1}
+	
+	Donec congue urna congue molestie aliquet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam lacinia dui id lorem ultrices, vitae aliquet nunc pulvinar. Nam porta dolor ac felis ultrices, vitae consequat ipsum scelerisque. Duis consectetur eleifend sem, a pretium felis consectetur ut. Nulla et diam fermentum, dignissim sem id, tempor nibh. Curabitur vel turpis efficitur eros molestie tempus. Nunc et condimentum quam. Donec in risus id erat ullamcorper euismod. Duis massa dui, rhoncus ut eleifend faucibus, consequat sed urna.
+	\begin{enumerate}
+		\item Felsorolás1: Szöveg a felsorolás1-hez
+		\begin{enumerate}
+			\item Felsorolás1.1
+			\item Felsorolás1.2
+		\end{enumerate}
+		\item Felsorolás2: \\
+		Szöveg a felsorolás2-höz.
+	\end{enumerate}
+	
+	\section{Szekció 2}
+	
+	Ut nec nisi aliquam, tristique elit sodales, iaculis magna. Cras sapien lectus, pulvinar vitae nisi at, posuere aliquet justo. Integer maximus mauris in sagittis iaculis. Pellentesque aliquet vehicula posuere. Aenean placerat pulvinar urna ac sollicitudin. Sed mauris purus, mollis a tellus ac, dapibus faucibus leo. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Integer tincidunt, urna quis suscipit volutpat, tellus turpis ultrices arcu, vel volutpat neque diam at nisi. Suspendisse potenti. Sed vehicula ex sit amet lectus scelerisque, quis gravida quam facilisis. Sed sed eros tristique, iaculis nisl vel, placerat felis. Pellentesque convallis porta tincidunt. Maecenas eu maximus lectus 
+	$ \frac{1}{x} , x \in  \mathbb{R} $
+	
+	
+\end{document}
