@@ -1,0 +1,165 @@
+\documentclass[margin=0px]{article}
+
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[a4paper, margin=0.7in]{geometry}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+
+\onehalfspacing
+
+\newenvironment{tetel}[1]{\paragraph{#1 \\}}{}
+
+\pagestyle{fancy}
+\lhead{\it{PTI BSc Záróvizsga tételek}}
+\rhead{1. Függvények határértéke, folytonossága}
+
+\title{\textbf{{\Large ELTE IK - Programtervező Informatikus BSc} \vspace{0.2cm} \\ {\huge Záróvizsga tételek}} \vspace{0.3cm} \\ 1. Függvények határértéke, folytonossága}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{tetel}{Függvények határértéke, folytonossága}
+    Függvények határértéke, folytonossága. Kompakt halmazon folytonos függvények tulajdonságai: Weierstrass-tétel, Bolzano-tétel. A hatványsor fogalma, Cauchy-Hadamard-tétel, analitikus függvények.
+\end{tetel}
+
+\section{Függvények határértéke}
+
+Adott $f \in \mathbb{K}_{1} \to \mathbb{K}_{2}, a \in \mathcal{D}'_{f}$ (torlódási pont). Az $f$ függvénynek az $a$ helyen van határértéke, ha $\exists A \in \overline{\mathbb{K}}_{2}$, ahol $\overline{\mathbb{K}} = \mathbb{C} \vee \mathbb{R} \vee +\infty \vee -\infty$, amelyre tetszőleges $K(A) \subset \mathbb{K}_{2}$ környezetet is véve megadható az $a$-nak egy alkalmas $k(a) \subset \mathbb{K}_{1}$ környezete, amellyel $f[(k(a) \backslash \{a\}) \cap \mathcal{D}_{f}] \subset K(A)$ teljesül. \\
+Másképp: $f(x) \in K(A), (a \neq x \in k(a) \cap \mathcal{D}_{f})$. \\
+Ekkor az egyértelműen létező $A \in \overline{\mathbb{K}}_{2}$ számot vagy valamelyik végtelent az $f$ függvény $a$ helyen vett határértékének nevezzük. \\
+Jelölés: $\lim\limits_{x \to a}{f(x)} = \lim\limits_{a}{f} = A$
+
+\subsection{Torlódási pont}
+
+$A \subset \mathbb{K}$, ekkor az $\alpha \in \overline{\mathbb{K}}$ torlódási pontja az $A$ halmaznak, ha bármely $K(\alpha)$ környezetre $(K(\alpha) \backslash \{\alpha\}) \cap A \neq \emptyset$. \\
+Egyenlőtlenségekkel: $A \subset \mathbb{K}$, ekkor $\alpha \in \mathbb{K}$ szám torlódási pontja az $A$ halmaznak, ha $\forall \varepsilon > 0$ esetén $\exists x \in A$, hogy $0 < |x-\alpha| < \varepsilon$.
+
+\subsection{Környezet}
+
+$A \subset \mathbb{K}, a \in A, r > 0: K_{r}(a) = K(a) = \{x \in A: |x-a| < r\}$.
+
+\subsection{Függvény}
+
+$\emptyset \neq A, B$ halmazok, $f \subset A \times B$ reláció. Valamely $x \in A$ elemre legyen $f_{x} := \{y \in B: (x,y) \in f\}$. $f$ reláció függvény, ha $\forall x \in A$-ra az $f_{x}$ halmaz legfeljebb egy elemű.
+
+\section{Függvények folytonossága}
+
+Az $f \in \mathbb{K}_{1} \to \mathbb{K}_{2}$ függvény az $a \in \mathcal{D}_{f}$ pontban folytonos, ha $\forall \varepsilon > 0$ számhoz megadható olyan $\delta > 0$ szám, amellyel bármely $x \in \mathcal{D}_{f}, |x-a| < \delta$ esetén $|f(x)-f(a)| < \varepsilon$. \\
+Jelölés: $f \in \mathcal{C}\{a\}$, ha $\forall x \in \mathcal{D}_{f} : f \in \mathcal{C}\{x\}$, akkor $f \in \mathcal{C}$.
+
+\section{Összefüggés határérték és folytonosság között}
+
+Legyen $f \in \mathbb{K}_{1} \to \mathbb{K}_{2}, a \in \mathcal{D}_{f} \cap \mathcal{D}'_{f}$. Ekkor $f \in \mathcal{C}\{a\} \iff \lim\limits_{a}{f} = f(a)$.
+
+\section{Fogalmak}
+
+\subsection{Kompakt halmaz}
+
+$A \subset \mathbb{K}$ kompakt, ha bármely $(x_{n}): \mathbb{N} \to A$ sorozatnak van olyan $(x_{\nu_{n}})$ részsorozata, amely konvergens és $\lim{(x_{\nu_{n}})} \in A$. \\
+Ekkor $A$ korlátos és zárt.
+
+\subsection{Konvergens}
+
+Egy $x = (x_{n}) : \mathbb{N} \to \mathbb{K}$ számsorozatot konvergensnek nevezünk, ha $\exists \alpha \in \mathbb{K}, \forall \varepsilon > 0, \exists N \in \mathbb{N}, \forall n \in \mathbb{N}, n > N : |x_{n}-\alpha| < \varepsilon$. \\
+$\alpha$ az $x$ sorozat határértéke.
+
+\subsection{Korlátos}
+
+Sorozatra: $x_{n}$ korlátos $\Rightarrow \exists \nu : x \circ \nu$ konvergens \\
+Halmazra: $\emptyset \neq A \subset \mathbb{K}$ korlátos, ha $\exists q \in \mathbb{R} : |x| \leq q, (x \in A)$
+
+\subsection{Zárt halmaz}
+
+Komplementere nyílt halmaz.
+
+\subsection{Nyílt halmaz}
+
+$A$ nyílt halmaz $\iff \forall a \in A, \exists K(a): K(a) \subset A$, vagyis az $A$ halmaz minden pontja belső pont.
+
+\section{Heine-tétel {\large (opcionális)}}
+
+Ha az $f \in \mathbb{K}_{1} \to \mathbb{K}_{2}$ függvény folytonos és $\mathcal{D}_{f}$ kompakt, akkor $f$ egyenletesen folytonos.
+
+\subsection{Egyenletesen folytonos}
+
+$f \in \mathbb{K}_{1} \to \mathbb{K}_{2}$ függvény egyenletesen folytonos, ha $\forall \varepsilon > 0, \exists \delta > 0 : |f(x)-f(t)| < \varepsilon, (x,t \in \mathcal{D}_{f}, |x-t| < \delta)$.
+
+\section{Weierstrass-tétel}
+
+Tegyük fel, hogy az $f \in \mathbb{K} \to \mathbb{R}$ függvény folytonos és $\mathcal{D}_{f}$ kompakt. Ekkor az $\mathcal{R}_{f}$ értékkészletnek van legnagyobb és legkisebb eleme $(\exists \max{\mathcal{R}_{f}}, \exists \min{\mathcal{R}_{f}})$.
+
+\section{Bolzano-tétel}
+
+Tegyük fel, hogy valamely $-\infty < a < b < +\infty$ esetén az $f:[a,b] \to \mathbb{R}$ függvény folytonos, és $f(a) \cdot f(b) < 0$ (ellenkező előjelű). \\
+Ekkor van olyan $\xi \in (a,b)$, amelyre $f(\xi) = 0$.
+
+\section{A hatványsor fogalma}
+
+Legyen adott az $a \in \mathbb{K}$ középpont és az $(a_{n}): \mathbb{N} \to \mathbb{K}$ együttható-sorozat, továbbá ezek segítségével tekintsük az alábbi függvényeket: $f_{n}(t) := a_{n}(t-a)^{n}, (t \in \mathcal{D} := \mathbb{K}, n \in \mathbb{N})$. Ekkor a $\sum{(f_{n})}$ függvénysort hatványsornak nevezzük.
+
+\subsection{Sorozat}
+
+Az $f$ függvényt sorozatnak nevezzük, ha $\mathcal{D}_{f} = \mathbb{N}$.
+
+\subsection{Függvénysorozat, függvénysor}
+
+$(f_{n})$ sorozat függvénysorozat, ha $\forall n \in \mathbb{N}$ esetén $f_{n}$ függvény, és valamilyen $\mathcal{D} \neq \emptyset$ halmazzal $\mathcal{D}_{f_{n}} = \mathcal{D}, (n \in \mathbb{N})$. \\
+Ha a szóban forgó $(f_{n})$ függvénysorozatra $\mathcal{R}_{f_{n}} \subset \mathbb{K}, (n \in \mathbb{N})$ is igaz, akkor az $(f_{n})$ függvénysorozat által meghatározott $\sum{(f_{n})}$ függvénysor a következő függvénysorozat: $\sum{(f_{n})} := (\sum\limits_{k=0}^{n}{f_{k}})$.
+
+\section{Cauchy--Hadamard-tétel}
+
+Tegyük fel, hogy az $(a_{n}) : \mathbb{N} \to \mathbb{K}$ sorozat esetén létezik a $\lim{(\sqrt[n]{|a_{n}|})}$ határérték, és legyen
+$$ r := \left\{\begin{array} {lr}
+        +\infty                              & ha \lim{(\sqrt[n]{|a_{n}|})} = 0 \\
+        \dfrac{1}{\lim{(\sqrt[n]{|a_{n}|})}} & ha \lim{(\sqrt[n]{|a_{n}|})} > 0
+    \end{array}\right.$$
+$r$-t a konvergenciasugárnak nevezzük.
+Ekkor bármely $a \in \mathbb{K}$ mellett a $\sum{(a_{n}(t-a)^{n})}$ hatványsorról a következőket mondhatjuk:
+\begin{enumerate}
+    \item Ha $r > 0$, akkor minden $x \in \mathbb{K}, |x-a| < r$ helyen a $\sum{(a_{n}(t-a)^{n})}$ hatványsor az $x$ helyen abszolút konvergens.
+    \item Ha $r < +\infty$, akkor tetszőleges $x \in \mathbb{K}, |x-a| > r$ mellett a $\sum{(a_{n}(t-a)^{n})}$ hatványsor az $x$ helyen divergens.
+\end{enumerate}
+
+\subsection{Abszolút konvergens}
+
+A $\sum\limits_{n=1}^{\infty}{a_{n}}$ végtelen sort abszolút konvergensnek nevezzük, ha a $\sum\limits_{n=1}^{\infty}{|a_{n}|}$ sor konvergens.
+
+\subsection{Divergens}
+
+Ha a $\lim\limits_{n \to \infty}{a_{n}}$ nem létezik, vagy nem véges, akkor a $\sum{a_{n}}$ végtelen sor divergens.
+
+\subsection{Cauchy--Hadamard-tételből következik}
+
+\begin{enumerate}
+    \item Ha $r = +\infty$, akkor $\mathcal{D}_{0} = \mathbb{K}$, és $\forall x \in \mathbb{K}$-ra a hatványsor abszolút konvergens.
+    \item Ha $r = 0$, akkor $\mathcal{D}_{0} = \{a\}$ és $\sum\limits_{n=0}^{\infty}{a_{n}(a-a)^{n}} = a_{0}$.
+    \item Ha $0 < r < +\infty$, akkor $K_{r}(a) \subset \mathcal{D}_{0} \subset G_{r}(a) = \{x \in \mathbb{K} : |x-a| \leq r\}$ és a $K_{r}(a)$ környezet $\forall x$ pontjára a hatványsor az $x$ helyen abszolút konvergens.
+    \item Ha $r > 0$, akkor tetszőleges $0 \leq \rho < r$ számhoz válasszuk az $x \in K_{r}(a)$ elemet úgy, hogy $|x-a| = \rho$. Ekkor $\sum\limits_{n=0}^{\infty}{|a_{n}(x-a)^{n}|} = \sum\limits_{n=0}^{\infty}{|a_{n}||x-a|^{n})} = \sum\limits_{n=0}^{\infty}{|a_{n}|\rho^{n})} < +\infty$
+\end{enumerate}
+
+\section{Analitikus függvények}
+
+Tegyük fel, hogy a $\sum{(a_{n}(t-a)^{n})}$ hatványsor $r$ konvergenciasugara (ld. C--H-tétel) nem nulla. Ekkor értelmezhetjük az alábbi függvényt: $f(x) := \sum\limits_{n=0}^{\infty}{a_{n}(x-a)^{n}}, (x \in K_{r}(a))$, ami nem más, mint a $\sum{(a_{n}(t-a)^{n})}$ függvénysor $F(x) := \sum\limits_{n=0}^{\infty}{a_{n}(x-a)^{n}}, (x \in \mathcal{D}_{0})$ összegfüggvényének a leszűkítése a $K_{r}(a)$ környezetre: $f = F|_{K_{r}(a)}$, ($f$ a hatványsor összegfüggvénye). Az ilyen szerkezetű $f$ függvényt analitikusnak nevezzük. \\
+Megjegyzés: $\mathcal{D}_{0}$ a $\sum{(a_{n}(t-a)^{n})}$ hatványsor konvergenciatartományát jelöli.
+
+\subsection{Fontos analitikus függvények}
+
+Olyan $a_{n}$-ek, amire $\lim{(\sqrt[n]{|a_{n}|})} = 0$, tehát $r = +\infty$ a $\sum{(a_{n}t^{n})}$ hatványsorok esetén. \vspace{0.3cm} \\
+Ezek az $a_{n}$-ek: $\dfrac{1}{n!}, \dfrac{(-1)^n}{(2n+1)!}, \dfrac{(-1)^n}{(2n)!}, \dfrac{1}{(2n+1)!}, \dfrac{1}{(2n)!}$.
+\begin{itemize}
+    \item $\exp{x} := \exp{(x)} = e^{x} = \sum\limits_{n=0}^{\infty}{\dfrac{x^n}{n!}, (x \in \mathbb{K})}$
+    \item $\sin{x} := \sin{(x)} = \sum\limits_{n=0}^{\infty}{(-1)^n\dfrac{x^{2n+1}}{(2n+1)!}, (x \in \mathbb{K})}$
+    \item $\cos{x} := \cos{(x)} = \sum\limits_{n=0}^{\infty}{(-1)^n\dfrac{x^{2n}}{(2n)!}, (x \in \mathbb{K})}$
+    \item $\sinh{x} := \sinh{(x)} = \sum\limits_{n=0}^{\infty}{\dfrac{x^{2n+1}}{(2n+1)!}, (x \in \mathbb{K})}$
+    \item $\cosh{x} := \cosh{(x)} = \sum\limits_{n=0}^{\infty}{\dfrac{x^{2n}}{(2n)!}, (x \in \mathbb{K})}$
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,482 @@
+\documentclass[margin=0px]{article}
+
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[a4paper, margin=0.7in]{geometry}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{pdfpages}
+
+\onehalfspacing
+
+\newenvironment{tetel}[1]{\paragraph{#1 \\}}{}
+
+\pagestyle{fancy}
+\lhead{\it{PTI BSc Záróvizsga tételek}}
+\rhead{3. Numerikus módszerek}
+
+\title{\textbf{{\Large ELTE IK - Programtervező Informatikus BSc} \vspace{0.2cm} \\ {\huge Záróvizsga tételek}} \vspace{0.3cm} \\ 3. Numerikus módszerek}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{tetel}{Numerikus módszerek}
+    Nemlineáris egyenletek iterációs módszerei: fixpont iterációk, Newton iteráció. Interpoláció: Lagrange- és Newton-féle alak. Legkisebb négyzetek módszere. Numerikus integrálás: interpolációs formulák, Newton-Cotes formulák, egyszerű és összetett formulák.
+\end{tetel}
+
+\section{Nemlineáris egyenletek iterációs módszerei}
+
+Eddig egyenletrendszerekkel foglalkoztunk, melyekben minden egyenlet lineáris volt. Most módszereket
+fogunk keresni az $f(x) = 0$ típusú egyenletek megoldására, ahol $f \in \mathbb{R} \to \mathbb{R}$. A módszerek
+lényege az lesz, hogy valamilyen szempont szerint egy számsorozatot állítunk elő, melyek bizonyos
+feltételek mellett az egyenlet gyökéhez konvergálnak.\\
+
+\noindent \textbf{Bolzano-tétel}: Legyen $f \in C[a,b]$ és $f(a)f(b) <0$, azaz az $f$ függvény az $a$ és $b$
+pontokban nem $0$, valamint ellenkező előjelű. Ekkor létezik $(a,b)$ intervallumbeli gyöke az $f$-nek, azaz
+$\exists x^{*} \in (a,b): f(x^{*}) = 0$.\\
+
+\noindent \textbf{A Bolzano-tétel következménye}: Ha a Bolzano-tétel feltételei mellett még $f$ szigorúan monoton is, akkor
+az $x^{*}$ egyértelműen létezik (hiszen $f$ invertálható).\\
+
+\noindent \textbf{Brouwer-féle fixponttétel}: Legyen $f : [a,b] \to [a,b]$ és $f \in C[a,b]$. Ekkor $\exists
+    x^{*} \in [a,b]: x^{*} = f(x^{*})$.\\
+
+\noindent \textbf{Tétel}: Legyen $f : [a,b] \to [a,b]$, $f \in C^{1}[a,b]$ és $f'$ állandó előjelű. Ekkor $\exists!
+    x^{*} \in [a,b]: x^{*} = f(x^{*})$.\\
+
+\noindent \textbf{Fixponttétel [a,b]-re}: Legyen $f : [a,b] \to [a,b]$ kontrakció a $q$ kontrakciós együtthatóval.
+Ekkor:
+
+\begin{enumerate}
+    \item	$\exists! x^{*} \in [a,b]: x^{*} = f^{x*}$,
+
+    \item	$\forall x_{0} \in [a,b]: x_{k+1} = f(x_{k})$ konvergens és $x^{*} = \lim\limits_{k \to \infty} x_{k}$,
+
+    \item	$| x_{k} - x^{*} | \leq q^{k} | x_{0} - x^{*}| \leq q^{k}(b-a)$.
+\end{enumerate}
+
+\noindent \textbf{p-adrendű konvergencia}: Az $(x_{k})$ konvergens sorozat ($\lim\limits_{k \to \infty} x_{k} = x^{*}$)
+$p$-adrendben konvergens, ha
+
+\begin{displaymath}
+    \lim\limits_{k \to \infty} \frac{|x_{k+1} - x^{*}|}{|x_{k}-x^{*}|^{p}} = c > 0
+\end{displaymath}
+
+\noindent Néhány megjegyzés a fenti definícióhoz:
+
+\begin{enumerate}
+    \item	$p$ egyértelmű és $p \geq 1$
+
+    \item	$p=1$ esetén lineáris $p=2$ esetén kvadratikus, $1 < p < 2$ esetén szuperlineáris
+
+    \item	A gyakorlatban az $|x_{k+1} - x^{*}| \leq M|x_{k} - x^{*}|^{p}$ alakot használják, azt jelenti, hogy
+          legalább $p$-adrendben konvergens.
+\end{enumerate}
+
+\noindent \textbf{Tétel}: Tegyük fel, hogy az $(x_{k})$ sorozat konvergens,
+$x_{k+1} = f(x_{k})$ és $f'(x^{*}) = f''(x^{*}) = ... = f^{(p-1)}(x^{*}) = 0$, de $f^{(p)}(x^{*}) \not = 0$.
+Ekkor az $(x_{k})$ $p$-adrendben konvergens.
+
+\subsubsection{Newton-módszer}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{img/newton_pelda}
+    \caption{A Newton-módszer ötlete.}
+    \label{fig:newton_pelda}
+\end{figure}
+
+Az ábrán a legszélső, 4.12-es pontból indulunk, felvesszük a függvény ehhez a ponthoz tartozó
+érintőjét, majd ennek az érintőnek a gyöke lesz a következő pont, és így tovább. Általánosan,
+tekintsük az $f$ függvény $x_{k}$ ponthoz tartozó érintőjének egyenletét:
+
+\begin{displaymath}
+    y - f(x_{k}) = f'(x_{k}) (x-x_{k})
+\end{displaymath}
+
+\noindent Mint mondtuk, az iteráció $x_{k+1}$. elemét az $x_{k}$-hoz tartozó érintő gyöke adja meg:
+
+\begin{displaymath}
+    0 - f(x_{k}) = f'(x_{k}) (x_{k+1}-x_{k}) \Rightarrow
+    - \frac{f(x_{k})}{f'(x_{k})} = x_{k+1} - x_{k} \Rightarrow
+    x_{k+1} = x_{k} - \frac{f(x_{k})}{f'(x_{k})}
+\end{displaymath}
+
+A fenti képlet a Newton-módszer képlete. Megjegyezhető, hogy a fenti módszer is $x_{k+1} = g(x_{k})$
+alakú (fixpontiteráció).
+
+Fontos megemlíteni, hogy $f'(x_{k}) = 0$ esetén nem értelmezhető a módszer. A gyakorlatban $f'(x_{k}) \approx 0$ is probléma.
+Ha $x^{*}$ többszörös gyök, akkor $f'(x^{*}) = 0$, vagyis $x^{*}$ közelében $f'(x_{k})$ egyre jobban közelít $0$-hoz, numerikusan
+instabil.\\
+
+\noindent \textbf{Monoton konvergencia tétele}: Tegyük fel, hogy $f \in C^{2}[a,b]$ és
+\begin{enumerate}
+    \item	$\exists x^{*} \in [a,b] : f(x^{*}) = 0$, azaz van gyök
+
+    \item	$f'$ és $f''$ állandó előjelű
+
+    \item	$x_{0} \in [a,b]$ legyen olyan, hogy $f(x_{0}) f''(x_{0})) >0$, azaz $f(x_{0}) \not = 0$, valamint $f(x_{0})$ és $f''(x_{0})$
+          azonos előjelűek
+\end{enumerate}
+
+\noindent Ekkor az $x_{0}$-ból indított Newton-módszer monoton konvergál $x^{*}$-hoz.
+
+\noindent \textbf{Lokális konvergencia tétele}:	Tegyük fel, hogy $f \in C^{2}[a,b]$ és
+\begin{enumerate}
+    \item	$\exists x^{*} \in [a,b] : f(x^{*}) = 0$, azaz van gyök
+
+    \item	$f'$ állandó előjelű
+
+    \item	$0<m_{1} \leq |f'(x)| (x \in [a,b])$ alsó korlát
+
+    \item	$f''(x) \leq M_{2} (x \in [a,b])$ felső korlát, $M:= \frac{M}{2m_{1}}$
+
+    \item	$x_{0} \in [a,b]: |x_{0} - x^{*}| < r = \min \left\{\frac{1}{M}, |x^{*}-a|, |x^{*}-b|\right\}$
+\end{enumerate}
+
+\noindent Ekkor az $x_{0}$-ból indított Newton-módszer másodrendben konvergens, hibabecslése:
+
+\begin{displaymath}
+    |x_{k+1} - x^{*}| \leq M|x_{0} - x^{*}|^{2}
+\end{displaymath}
+\subsubsection{Húrmódszer}
+
+Továbbra is $f(x) = 0$ megoldása a cél egy adott $[a, b]$ intervallumon.
+Az eljárás lényege a következő. Kezdetben $x_{0} := a, x_{1} := b$, majd meghúzzuk ezen pontok által
+képzett egyenest. Legyen $x_{2}$ a húr gyöke. Ha $f(x_{2}) = 0$, akkor megtaláltuk a gyököt. Ha $f(x_{2}) \not = 0$,
+akkor folytatjuk a keresést az $[x_{0},x_{2}]$ vagy $[x_{2},x_{1}]$ intervallumban. Ha $f(x_{0})f(x_{2}) < 0$, akkor
+$[x_{0},x_{2}]$ intervallumban folytatjuk, ha $f(x_{2}) f(x_{1}) < 0$, akkor $[x_{2}, x_{1}]$ intervallumban. Stb.
+
+Általánosan: Legyen $x_{0} := a, x_{1} := b$ és	$f(a)f(b) < 0$. Az $(x_{k},f(x_{k}))$ és $(x_{s},f(x_{s}))$
+pontokon átmenő egyenesekkel közelítjük a függvényt	ahol $x_{s}$-re $f(x_{s})f(x_{k})<0$ és $s$ a legnagyobb ilyen index.
+$x_{k+1}$-et a következőképpen határozhatjuk meg:
+
+\begin{displaymath}
+    x_{k+1} := x_{k} -
+    \frac
+    {f(x_{k})}
+    {\frac{f(x_{k}) - f(x_{s})}{x_{k}-x_{s}}} =
+    x_{k} -
+    \frac
+    {f(x_{k}) (x_{k} -x_{s}) }
+    {f(x_{k}) - f(x_{s})}
+\end{displaymath}
+
+\noindent \textbf{Tétel}: Legyen $f \in C^{2}[a,b]$ és
+\begin{enumerate}
+    \item	$f(a)f(b)<0$
+    \item	$M = \frac{M_{2}}{2m_{1}}$, ahol $0<m_{1} \leq |f'(x)|$ és $f''(x) \leq M_{2} (x \in (a,b))$
+    \item	$M(b-a) < 1$
+\end{enumerate}
+
+\noindent Ekkor a húrmódszer konvergens, hibabecslése pedig:
+
+\begin{displaymath}
+    |x_{k+1} - x^{*}| \leq \frac{1}{M}(M|x_{0}-x^{*}|)^{k+1}
+\end{displaymath}
+
+\subsubsection{Szelőmódszer}
+A szelőmódszer lényege, hogy az $(x_{k},f(x_{k}))$ és $(x_{k-1},f(x_{k-1}))$ pontokon átmenő egyenessel közelítjük
+$f$-et, a kapott egyenes $x$ tengellyel vett metszéspontja $(x_{k+1})$ lesz a következő pont. Ez
+tulajdonképpen a húrmódszer $s := k - 1$-re.
+
+\begin{displaymath}
+    x_{k+1} :=
+    x_{k} -
+    \frac
+    {f(x_{k}) (x_{k} -x_{k-1}) }
+    {f(x_{k}) - f(x_{k-1})}
+\end{displaymath}
+
+\noindent \textbf{Tétel}: Ha teljesülnek a Newton-módszer lokális konvergencia tételének feltételei, akkor a szelőmódszer
+konvergens $p = \frac{1+\sqrt{5}}{2}$ rendben ,és hibabecslése:
+
+\begin{displaymath}
+    |x_{k+1} - x^{*}| \leq M|x_{k}-x^{*}||x_{k-1}-x^{*}|
+\end{displaymath}
+
+\subsubsection{Többváltozós Newton-módszer}
+
+Most $F(x) = 0$ megoldásait keressük, ahol $F \in \mathbb{R}^{n} \to \mathbb{R}^{n}$. Tekintsük a többváltozós Newton-módszert:
+
+\begin{displaymath}
+    x^{(k+1)} := x^{(k)} - [F'(x^{(k)})]^{-1}F(x^{(k)})
+\end{displaymath}
+
+\noindent ahol
+
+\begin{displaymath}
+    F(x) = \begin{bmatrix}
+        f_{1}(x) \\[0.3em]
+        f_{2}(x) \\[0.3em]
+        ...      \\[0.3em]
+        f_{n}(x)
+    \end{bmatrix},
+    F'(x) = \begin{bmatrix}
+        \partial_{1}f_{1}(x) & \partial_{2}f_{1}(x) & ... \\[0.3em]
+        \partial_{1}f_{2}(x) & \partial_{2}f_{2}(x) & ... \\[0.3em]
+        ...                  & ...                  & ...
+    \end{bmatrix}
+\end{displaymath}
+
+\noindent Ténylegesen az $F'(x^{(k)}) (x^{(k+1)} - x^{(k)}) = -F(x^{(k)})$ egyenletrendszert oldjuk meg.
+
+\section{Interpoláció}
+
+A gyakorlatban sokszor felmerül olyan probléma, hogy egy többségében ismeretlen (csak néhány pontbeli érték ismert)
+vagy nagyon költségesen kiszámítható függvénnyel kellene egy megadott intervallumon dolgoznunk.
+Ekkor például azt tehetjük, hogy néhány pontban kiszámítjuk	a függvény értékét,
+majd keresünk olyan egyszerűbben számítható függvényt, amelyik illeszkedik az
+adott pontokra. Ezután az intervallum bármely további pontjában az illesztett függvény értékeit használjuk, mint
+az eredeti függvény értékeinek a közelítéseit. Ilyen egyszerűbben kiszámolható függvények pl. a polinomok (polinom interpoláció).
+
+Példa alkalmazásra: Animáció készítésénél nem szeretnénk minden egyes képkockát saját magunk elkészíteni, hanem csak bizonyos képkockákat,
+ún. kulcskockákat. A köztes képkockákon az egyes objektumok helyzetét szeretnénk a számítógéppel kiszámíttatni (például szeretnénk, hogy
+ha egy objektum egyenes vonalú, egyenletes mozgást végezne két adott pozíció között).
+
+\subsection{Polinom interpoláció}
+
+\subsubsection{A polinom interpoláció feladata}
+Legyenek adva $n \in \mathbb{N}$ és az $x_{k} \in \mathbb{R}, k=0,1,..,n$ különböző számok, az ún. interpolációs alappontok, valamint
+az $f(x_{k}),k=0,1,..,n$ számok, az ismert függvényértékek. Keressük azt a legfeljebb $n$-edfokú $p_{n}$ polinomot $(p_{n} \in P_{n})$,
+amelyre:
+
+\begin{displaymath}
+    p_{n}(x_{k}) = f(x_{k}) \ \ k=0,1,...,n
+\end{displaymath}
+
+\noindent Azaz a keresett polinom az interpolációs alappontokban a megadott függvényértékeket veszi fel.\\
+
+\noindent \textbf{Tétel}: A fenti interpolációs feladatnak egyértelműen létezik megoldása.\\
+
+\subsubsection{Lagrange-interpoláció}
+Az interpolációs polinom kiszámolására explicit képletet ad a Lagrange-interpoláció.\\
+
+\noindent \textbf{Lagrange-alappolinomok}: Adott $n \in \mathbb{N}$ és $x_{k} \in \mathbb{R}, k=0,1,...,n$ különböző alappontokra
+a Lagrange-alappolinomokat a következőképpen definiáljuk:
+
+\begin{displaymath}
+    l_{k}(x) =
+    \frac
+    {\displaystyle\prod_{\substack{j=0\\j \not = k}}^{n}(x-x_{j})}
+    {\displaystyle\prod_{\substack{j=0\\j \not = k}}^{n}(x_{k}-x_{j})}
+\end{displaymath}
+
+\noindent $k=0,1, ..., n$ esetén.\\
+
+\noindent Az alappontok mind $n$-edfokú polinomok, és a következő tulajdonsággal rendelkeznek:
+
+\begin{displaymath}
+    l_{k}(x_{j})=\left\{\begin{array}{lr}
+        1 & ha \ j=k        \\
+        0 & ha \ j \not = k
+    \end{array}
+    \right\}
+\end{displaymath}
+
+\noindent \textbf{Tétel}: Az interpolációs feladat megoldása az alábbi polinom, amelyet az interpolációs
+polinom Lagrange-alakjának hívunk:
+
+\begin{displaymath}
+    L_{n}(x) = \sum_{k=0}^{n}f(x_{k})l_{k}(x)
+\end{displaymath}
+
+\noindent A továbbiakban jelölje $[a,b]$ az $x_{0}, x_{1}, ..., x_{n}$ alappontok által kifeszített intervallumot.\\
+
+\noindent \textbf{A Lagrange-interpoláció hibája}: Ha $f \in C^{n+1}[a,b]$, akkor $\forall x \in [a,b]$ esetén
+\begin{displaymath}
+    |f(x) - L_{n}(x)| \leq \frac{M_{n+1}}{(n+1)!}|\omega_{n}(x)|
+\end{displaymath}
+
+\noindent ahol $\omega_{n}(x) = \displaystyle\prod_{i=0}^{n}(x-x_{i})$, valamint $M_{k} = \displaystyle\max_{[a,b]}|f^{(k)}(x)|$.\\
+
+\noindent \textbf{Egyenletes konvergencia}: Legyen $f \in C^{\infty}[a,b]$ és legyen adva egy $[a,b]$ intervallumbeli
+alappontrendszerek sorozata: $x_{k}^{(n)}$, $k=0,1,...,n$, $n=0,1,2,...$. Legyen $L_{n}$ az $x_{0}^{(n)}, ... ,x_{n}^{(n)}$
+alappontrendszerre illesztett Lagrange-interpolációs polinom ($n=0,1,2,...$). Ekkor ha $\exists M>0$ úgy, hogy
+$M_{n} \leq M^{n} \ \forall n \in \mathbb{N}$, akkor az $L_{n}$ sorozat egyenletesen konvergál az $f$ függvényhez.\\
+
+\noindent \textbf{Marcinkiewicz tétele}: Minden $f \in C[a,b]$ esetén létezik a fenti módon definiált alappontrendszer
+úgy, hogy $\Vert f - L_{n}\Vert_{\infty} \to 0$.\\
+
+\noindent \textbf{Faber tétele}: Minden a fenti módon definiált alappontrendszer esetén van olyan $f \in C[a,b]$ függvény,
+hogy $\Vert f - L_{n}\Vert_{\infty} \not \to 0$.\\
+
+\noindent \textbf{Osztott differencia}: Legyenek adva az $x_{k} \in [a,b], k=0,1,...,n$ különböző alappontok.
+Az $f:[a,b] \to \mathbb{R}$ függvénynek a megadott alappontrendszerre vonatkozó elsőrendű osztott differenciái
+
+\begin{displaymath}
+    f[x_{i},x_{i+1}] = \frac{f(x_{i+1})-f(x_{i})}{x_{i+1} - x_{i}}
+\end{displaymath}
+
+\noindent a magasabb rendű osztott differenciákat rekurzívan definiáljuk. Tegyük fel, hogy a $k-1$ rendű osztott differenciák
+már definiálva lettek, akkor a $k$-adrendű osztott differenciák az alábbiak:
+
+\begin{displaymath}
+    f[x_{i},x_{i+1},...,x_{i+k}] = \frac{f[x_{i+1},x_{i+2}, ..., x_{i+k}]-f[x_{i},x_{i+1}, ..., x_{i+k-1})]}{x_{i+k} - x_{i}}
+\end{displaymath}
+
+\noindent Látható, hogy a $k$-adrenű osztott differencia $k+1$ alappontra támaszkodik.\\
+
+Ha adott egy interpoláció alappontrendszer függvényértékekkel, akkor a hozzá tartozó osztott differenciákat az
+alábbi táblázat szerint érdemes elrendezni, és ez az elrendezés egyúttal a kiszámolást is segíti.
+
+\begin{table}[H]
+    \begin{tabular}{llllllll}
+        $x_{0}$                         & $f(x_{0})$                    &                      &     &                                       &     &   & \\
+        $x_{1}$                         & $f(x_{1})$                    & $f[x_{0},x_{1}]$     &     &                                       &     &   & \\
+        $x_{2}$                         & $f(x_{2})$                    & $f[x_{1},x_{2}]$     &     &                                       &     &   & \\
+        \rotatebox[origin=c]{90}{...}   & \rotatebox[origin=c]{90}{...} &                      &     &                                       &     &   & \\
+        $x_{k}$                         & $f(x_{k})$                    & $f[x_{k-1},x_{k}]$   & ... & $f[x_{0}, x_{1}, ..., x_{k}]$         &     &   & \\
+        \rotatebox[origin=c]{90}{...}   & \rotatebox[origin=c]{90}{...} &                      &     &                                       &     &   & \\
+        $x_{n-1}$                       & $f(x_{n-1})$                  & $f[x_{n-2},x_{n-1}]$ & ... & $f[x_{n-1-k}, x_{n-k}, ..., x_{n-1}]$ & ... &
+        $f[x_{0}, x_{1}, ..., x_{n-1}]$ &                                                                                                                \\
+        $x_{n} $                        & $f(x_{n})$                    & $f[x_{n-1},x_{n}]$   & ... & $f[x_{n-k}, x_{n-k+1}, ..., x_{n}]$   & ... &
+        $f[x_{1}, x_{2}, ..., x_{n}]$   & $f[x_{0}, x_{1}, ..., x_{n}]$                                                                                  \\
+    \end{tabular}
+\end{table}
+
+
+\noindent \textbf{Az interpolációs polinom Newton-alakja}: Az interpolációs polinom az alábbi alakban felírható:
+\begin{displaymath}
+    N_{n}(x) = f(x_{0}) + \displaystyle\sum_{k=1}^{n}f[x_{0},x_{1}, ..., x_{k}] \omega_{k-1}(x)
+\end{displaymath}
+
+\noindent ahol $\omega_{j}(x) =  (x-x_{0})(x-x_{1})...(x-x_{j})$. Ezt az alakot az interpolációs polinom Newton-alakjának hívjuk.
+
+\subsubsection{Hermite-interpoláció}
+Az előbbi interpolációs feladatot a következőképpen általánosíthatjuk. Legyenek adva az egyes alappontokban a függvényértékek
+mellett a függvény derivált értékei is valamely rendig bezárólag. Ekkor olyan polinomot keresünk, amelyik deriváltjaival együtt
+illeszkedik a megadott értékekre, vagyis:\\
+
+\noindent Legyenek adva $n,m_{0},m_{1},..., m_{n} \in \mathbb{N}$ és az $x_{j} \in \mathbb{R}, j=0,1,...,n$ interpolációs
+alappontok, valamint az $f^{(k)}(x_{j}) \ \ k=0,1,...,m_{j}-1, \ \ \ j=0,1,...,n$ függvény- és derivált értékek. Legyen
+$m = \displaystyle\sum_{j=0}^{n}m_{j}$ Keressük azt a legfeljebb ($m-1$)-edfokú $p_{m-1}$ polinomot, melyre:
+
+\begin{displaymath}
+    p^{(k)}_{m-1}(x_{j}) = f^{(k)}(x_{j}) \ \ k=0,1,...,m_{j}-1, \ \ \ j=0,1,...,n
+\end{displaymath}
+
+\noindent \textbf{Megjegyzések}:
+\begin{enumerate}
+    \item	Ha $m_{j}=2, j=0,1,...,n$, akkor a feladatot Hermite-Fejér-féle interpolációnak nevezzük. Ekkor minden alappontban
+          a függvény- és az első derivált érték adott. A keresett polinom pedig legfeljebb ($2n+1$)-edfokú.
+
+    \item	Ha $m_{j}=1, j=0,1,...,n$, akkor a Lagrange-interpolációt kapjuk vissza.
+\end{enumerate}
+
+\noindent \textbf{Osztott differencia ismétlődő allapontokra}: Ha $x_{k}$ $j$-szer szerepel:
+\begin{displaymath}
+    f[x_{k}, ... x_{k}] = \frac{f^{(j)}(x_{k})}{j!}
+\end{displaymath}
+
+\noindent \textbf{Tétel}: A Hermite-féle interpolációs polinom egyértelműen létezik.\\
+
+\noindent \textbf{A Hermite interpolációs polinom előállítása}: Könnyen felírható a Newton-féle formában. Csak annyit
+kell tennünk, hogy kiindulunk az alappontok és a függvényértékek táblázatával és legyártjuk az osztott differenciák
+táblázatát. Az az egyetlen különbség most, hogy az $x_{j}$ alappontot $m_{j}$-szer soroljuk fel.\\
+
+\noindent \textbf{Hermite-interpoláció hibája}: Ha $f \in C^{m}[a,b]$, akkor $\forall x \in [a,b]:$
+
+\begin{displaymath}
+    |f(x) - H_{m-1}(x)| \leq \frac{M_{m}}{m!}|\Omega_{m}(x)|
+\end{displaymath}
+
+\noindent ahol $\Omega_{m}(x) = (x-x_{0})^{m_{0}}(x-x_{1})^{m_{1}}...(x-x_{n})^{m_{n}}$
+
+\section{Legkisebb négyzetek módszere}
+
+Gyakorlati feladatok során adódik a következő probléma. Egy elsőfokú függvényt mérünk bizonyos pontokban, de
+a mérési hibák miatt ezek nem lesznek egye egyenesen. Ekkor olyan egyenest keresünk, amelyik az alábbi
+értelemben legjobban illeszkedik a megadott mérési ponthalmazra.
+
+Legyenek adva az $(x_{i},y_{i}), i=1,2,..,m$ mérési pontok. Keressük azt a $p_{1}(x) = a + bx$ legfeljebb
+elsőfokú polinomot, amelyre a
+
+\begin{displaymath}
+    \displaystyle\sum_{i=1}^{m}(y_{i}-p_{1}(x_{i}))^{2} =
+    \displaystyle\sum_{i=1}^{m}(y_{i}- a - bx_{i})^{2}
+\end{displaymath}
+
+\noindent kifejezés minimális. Ez azt jelenti, hogy azt az egyenes keressük, amelyre a függvényértékek hibáinak
+négyzetösszege minimális.
+
+Az általános feladat az alábbi.
+
+Adottak az $m,n \in \mathbb{N}$, ahol $m >> n$ és $(x_{i},y_{i}), i= 1,2,...,m$ mérési pontok, ahol az $x_{i}$
+alappontok különbözők. Keressük azt a $p_{n}(x) = a_{0} + a_{1}x + ... a_{n}x^{n}$ legfeljebb $n$-edfokú
+polinomot, melyre a
+
+\begin{displaymath}
+    \displaystyle\sum_{i=1}^{m}(y_{i}-p_{n}(x_{i}))^{2}
+\end{displaymath}
+
+\noindent kifejezés minimális.
+
+A feladat megoldásához tekintsük annak egy átfogalmazását.
+
+Vegyük a $p_{n}(x_{i}) = y_{i}, i=1,2,...,m)$ egyenletrendszert. Ez a rendszer az ismeretlen $a_{i}$ együtthatókra nézve
+lineáris, mégpedig túlhatározott, amelynek az $A$ mátrixa egy téglalap alakú Vandermonde-mátrix $A \in \mathbb{R}^{m \times (n+1)}$,
+a $b \in \mathbb{R}^{m}$ jobb oldali vektora pedig a függvényértékekből adódik:
+
+\begin{displaymath}
+    \begin{bmatrix}
+        1                             & x_{1}                         & x_{1}^{2}                     & ...                           & x_{1}^{n}                     \\[0.3em]
+        1                             & x_{2}                         & x_{2}^{2}                     & ...                           & x_{2}^{n}                     \\[0.3em]
+        1                             & x_{3}                         & x_{3}^{2}                     & ...                           & x_{3}^{n}                     \\[0.3em]
+        \rotatebox[origin=c]{90}{...} & \rotatebox[origin=c]{90}{...} & \rotatebox[origin=c]{90}{...} & \rotatebox[origin=c]{90}{...} & \rotatebox[origin=c]{90}{...} \\[0.3em]
+        1                             & x_{m}                         & x_{m}^{2}                     & ...                           & x_{m}^{n}                     \\[0.3em]
+    \end{bmatrix}
+    \begin{bmatrix}
+        a_{0}                         \\[0.3em]
+        a_{1}                         \\[0.3em]
+        a_{2}                         \\[0.3em]
+        \rotatebox[origin=c]{90}{...} \\[0.3em]
+        a_{n}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        y_{0}                         \\[0.3em]
+        y_{1}                         \\[0.3em]
+        y_{2}                         \\[0.3em]
+        \rotatebox[origin=c]{90}{...} \\[0.3em]
+        y_{m}
+    \end{bmatrix}
+\end{displaymath}
+
+Ezen jelölésekkel a minimalizálandó kifejezés $\Vert Az - b \Vert_{2}^{2}$, ahol $z = [a_{0},a_{1}, ..., a_{n}]^{T}$
+a keresett együtthatók vektora. A feladat megoldását a Gauss-féle normálegyenletek adják:
+
+\begin{displaymath}
+    A^{T}Az = A^{T}b
+\end{displaymath}
+
+\noindent A fenti LER-t kell megoldani $z$-re.\\
+
+\noindent \textbf{n=1 eset}: Ekkor a feladatot gyakran lineáris regressziónak is hívjuk. Ebben az esetben
+\begin{displaymath}
+    A^{T}A = \begin{bmatrix}
+        m                    & \sum_{i=1}^{m} x_{i}     \\[0.3em]
+        \sum_{i=1}^{m} x_{i} & \sum_{i=1}^{m} x_{i}^{2}
+    \end{bmatrix} \ ,
+    A^{T}b = \begin{bmatrix}
+        \sum_{i=1}^{m} y_{i} \\[0.3em]
+        \sum_{i=1}^{m} x_{i}y_ {i}
+    \end{bmatrix} \ ,
+    z= \begin{bmatrix}
+        b \\[0.3em]
+        a
+    \end{bmatrix}
+\end{displaymath}
+
+\section{Numerikus integrálás}
+
+\includepdf[pages={2-8}]{Numerikus_Integralas.pdf}
+
+\end{document}

@@ -1,0 +1,11 @@
+{
+    "files.autoSave": "afterDelay",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "latex-workshop.view.pdf.viewer": "tab",
+    "latex-workshop.latex.autoClean.run": "onBuilt",
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "[latex]": {
+        "editor.defaultFormatter": "James-Yu.latex-workshop"
+    },
+}

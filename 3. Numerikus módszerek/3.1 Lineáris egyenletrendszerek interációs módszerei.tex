@@ -1,0 +1,356 @@
+\documentclass[margin=0px]{article}
+
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[a4paper, margin=0.7in]{geometry}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+
+\onehalfspacing
+
+\newenvironment{tetel}[1]{\paragraph{#1 \\}}{}
+
+\pagestyle{fancy}
+\lhead{\it{PTI BSc Záróvizsga tételek}}
+\rhead{3.1. Lineáris egyenletrendszerek iterációs módszerei}
+
+\title{\textbf{{\Large ELTE IK - Programtervező Informatikus BSc} \vspace{0.2cm} \\ {\huge Záróvizsga tételek}} \vspace{0.3cm} \\ 3.1. Lineáris egyenletrendszerek iterációs módszerei}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection{Lineáris egyenletrendszerek iterációs módszerei}
+
+A lineáris egyenletrendszert (LER) vektorsorozatokkal közelítjük, törekedve a minél gyorsabb konvergenciára.
+Az iterációs módszereknek a lényege az $Ax = b \Longleftrightarrow x = Bx + c$ átalakítás. Ilyen alak létezik,
+sőt nem egyértelmű,	hanem sokféle lehet, és a különböző átalakítások szolgáltatják a különféle iterációs módszereket.\\
+
+\noindent \textbf{Definíció (kontrakció)}: Az $F: \mathbb{R}^{n} \to \mathbb{R}^{n}$ függvény kontrakció, ha
+$\exists 0 \leq q < 1 : \forall x,y \in \mathbb{R}^{n}:$
+\begin{displaymath}
+    \Vert F(x) - F(y) \Vert \leq q \Vert x - y \Vert
+\end{displaymath}.
+
+\noindent A $q$ értéket kontrakciós együtthatónak nevezzük.\\
+
+\noindent \textbf{Banach-féle fixponttétel}: Legyen $F: \mathbb{R}^{n} \to \mathbb{R}^{n}$ kontrakció a q
+kontrakciós együtthatóval. Ekkor a következő állítások igazak:
+
+\begin{enumerate}
+    \item	$\exists! x^{*} \in \mathbb{R}^{n}: x^{*} = f(x^{*})$. Azt mondjuk, hogy $x^{*}$ az $f$ függvény
+          fixpontja.
+
+    \item	$\forall x^{(0)} \in \mathbb{R}^{n}$ kezdőérték esetén az $x^{(k+1)} = f(x^{(k)})$ sorozat konvergens,
+          és $\lim \limits_{k\to\infty} x^{(k)} = x^{*}$.
+
+    \item	$\Vert x^{(k)} - x^{*}\Vert \leq \frac{q^{k}}{1-q} \Vert x^{(1)} - x^{0}\Vert$.
+
+    \item	$\Vert x^{(k)} - x^{*}\Vert \leq q^{k} \Vert x^{(0)} - x^{*}\Vert$.
+\end{enumerate}
+
+Vegyük észre, hogy az $Ax = b \Longleftrightarrow x = Bx + c$ átírással megteremtettük a kapcsolatot a
+Banach-féle	fixponttétellel, hisz most az $F(x) = Bx + c$ függvény fixpontját keressük. A fenti felírásban
+$B$-t átmenetmátrixnak nevezzük.\\
+
+\noindent \textbf{Tétel (elégséges feltétel a konvergenciára)}: Ha a LER $B$ átmenetmátrixára $\Vert B \Vert < 1$,
+akkor tetszőleges $x^{(0)}$-ból indított $x^{(k+1)} := Bx^{(k)} + c$ iteráció konvergál az $Ax = b$ LER megoldásához.\\
+
+\noindent \textbf{Tétel (Szükséges és elégséges feltétel a konvergenciára)}: Tetszőleges $x^{(0)}$-ból indított
+$x^{(k+1)} := Bx^{(k)} + c$ iteráció konvergál az $Ax = b$ LER megoldásához $\Longleftrightarrow$
+$\varrho(B) < 1$, ahol $\varrho(B) = \max_{1 \leq i \leq n} |\lambda_{i}(B)|$ a $B$ mátrix spektrálsugara.
+
+\subsubsection{Jacobi-iteráció}
+
+Tekintsük az $A \in \mathbb{R}^{n \times n}$ mátrix $L + D + U$ felbontását, ahol $L$ a mátrix szigorú alsó része, $U$ a
+szigorú felső része, $D$ pedig a diagonális része. Ennek segítségével konstruáljuk meg a következő átírást:
+
+\begin{displaymath}
+    Ax = b \Longleftrightarrow (L + D + U)x = b \Longleftrightarrow Dx = -(L+U)x+b \Longleftrightarrow
+    x = -D^{-1}(L+U)x + D^{-1}b
+\end{displaymath}
+
+\noindent A Jacobi-iteráció átmenetmátrixa tehát $B_{J} = -D^{-1}(L + U)$, maga az iteráció pedig:
+
+\begin{displaymath}
+    x^{(k+1)} :=  -D^{-1}(L + U)x^{(k)} + D^{-1}b
+\end{displaymath}
+
+\noindent Koordinátás alakban felírva:
+
+\begin{displaymath}
+    x^{(k+1)}_{i} :=
+    -\frac{1}{a_{ii}}
+    \Bigg[
+    \sum_{\substack{j=1\\ j \not = i}}^{n} a_{ij}x_{j}^{(k)} - b_{i}
+    \Bigg]
+    \; (i = 1, ..., n)
+\end{displaymath}
+
+\noindent \textbf{Tétel}: Ha az A mátrix szigorúan diagonálisan domináns a soraira, akkor
+$\Vert B_{J} \Vert_{\infty} < 1$ (azaz konvergens a módszer).\\
+
+\noindent \textbf{Tétel}: Ha az A mátrix szigorúan diagonálisan domináns az oszlopaira, akkor
+$\Vert B_{J} \Vert_{1} < 1$ (azaz konvergens a módszer).
+
+\subsubsection{Csillapított Jacobi-iteráció}
+
+Továbbra is a Jacobi-iterációval foglalkozunk, csak egy plusz $\omega$ paraméter bevezetésével próbáljuk
+finomítani a módszert. Tekintsük a  $Dx = -(L + U)x + b$ egyenletet, valamint a triviális $Dx =
+    Dx$ egyenletet. Ezeket rendre szorozzuk meg $\omega$, illetve $1 - \omega$ értékekkel, majd adjuk össze a két
+egyenletet:
+
+\begin{displaymath}
+    Dx = (1 - \omega)Dx -\omega(L+U)x + \omega b
+\end{displaymath}
+
+\noindent Szorozzunk $D^{-1}$-zel:
+
+\begin{displaymath}
+    x = (1 - \omega)Ix -\omega D^{-1}(L+U)x + \omega D^{-1}b \Longleftrightarrow
+    x = ((1 - \omega)I -\omega D^{-1}(L+U))x + \omega D^{-1}b
+\end{displaymath}
+
+\noindent Ez alapján $B_{J(\omega)} = (1 - \omega)I -\omega D^{-1}(L+U)$ és $c_{J}(\omega) = \omega D^{-1}b$.\\
+
+\noindent Észrevehető, hogy $\omega = 1$ esetén pont a Jacobi-iterációt kapjuk vissza.\\
+
+\noindent Koordinátás alakban felírva:
+
+\begin{displaymath}
+    x^{(k+1)}_{i} =
+    (1 - \omega)x^{(k)}_{i}
+    -\frac{\omega}{a_{ii}}
+    \Bigg[
+    \sum_{\substack{j=1\\ j \not = i}}^{n} a_{ij}x_{j}^{(k)} - b_{i}
+    \Bigg]
+    \; (i = 1, ..., n)
+\end{displaymath}
+
+\noindent \textbf{Tétel}: Ha $J(1)$ konvergens, akkor $\omega \in (0,1)$-re $J(\omega)$ is az.
+
+\subsubsection{Gauss-Seidel iteráció}
+
+\noindent Egy másik lehetséges iteráció konstruálásának az ötlete a következő:
+
+\begin{displaymath}
+    Ax = b \Longleftrightarrow (L + D + U)x = b \Longleftrightarrow (L+D)x = -Ux+b \Longleftrightarrow
+    x = -(L+D)^{-1}Ux + (L+D)^{-1}b
+\end{displaymath}
+
+\noindent Ez az ötlet szüli a Gauss-Seidel iterációt, vagyis:
+
+\begin{displaymath}
+    x^{(k+1)} :=  -(L+D)^{-1}Ux^{(k)} + (L+D)^{-1}b
+\end{displaymath}
+
+Az iteráció átmenetmátrixa tehát $B_{S} = -(L+D)^{-1}U$. A koordinátás alak felírásához kicsit átírjuk
+az iterációt:
+
+\begin{displaymath}
+    (L+D)x^{(k+1)} = -Ux^{(k)} + b
+\end{displaymath}
+
+\begin{displaymath}
+    Dx^{(k+1)} = -Lx^{(k+1)} - Ux^{(k)} + b
+\end{displaymath}
+
+\begin{displaymath}
+    x^{(k+1)} = -D^{-1} \big[Lx^{(k+1)} + Ux^{(k)} - b \big]
+\end{displaymath}
+
+\begin{displaymath}
+    x^{(k+1)}_{i} =
+    -\frac{1}{a_{ii}}
+    \Bigg[
+    \sum_{j=1}^{i-1} a_{ij}x_{j}^{(k+1)} +
+    \sum_{j=i+1}^{n} a_{ij}x_{j}^{(k)}	-
+    b_{i}
+    \Bigg]
+    \; (i = 1, ..., n)
+\end{displaymath}
+
+\noindent \textbf{Megjegyzés}: Az implementáció során elég egyetlen $x$ vektort eltárolni, és annak a komponenseit sorban felülírni, ugyanis
+láthatjuk, hogy az első $i-1$ komponenst már az "új", $x^{(k+1)}$ vektorból vesszük.\\
+
+\noindent \textbf{Tétel}: Ha $A$ szigorúan diagonálisan domináns
+\begin{enumerate}
+    \item	a soraira, akkor
+          $\Vert B_{S} \Vert_{\infty} \leq \Vert B_{J} \Vert_{\infty} < 1$.
+
+    \item  az oszlopaira, akkor
+          $\Vert B_{S} \Vert_{1} \leq \Vert B_{J} \Vert_{1} < 1$.
+\end{enumerate}
+
+\noindent Azaz a Gauss-Seidel is konvergens, és legalább olyan gyors, mint a Jacobi.
+
+\subsubsection{Relaxációs módszer}
+
+A relaxációs módszer lényegében a csillapított Gauss-Seidel iterációt jelenti. Ennek megkonstruálásához
+tekintsük az $(L+D)x = -Ux + b$ és $Dx = Dx$ egyenleteket. Ezeket rendre szorozzuk meg $\omega$, illetve
+$1 - \omega$ értékekkel, majd adjuk össze a két	egyenletet:
+
+\begin{displaymath}
+    (D+\omega L)x = (1 - \omega)Dx -\omega Ux + \omega b
+\end{displaymath}
+
+\begin{displaymath}
+    x = (D+\omega L)^{-1}\big[(1 - \omega)D -\omega U \big]x + \omega (D+\omega L)^{-1}b
+\end{displaymath}
+
+Az iteráció tehát: $x^{(k+1)} = (D+\omega L)^{-1}\big[(1 - \omega)D -\omega U \big]x^{(k)} + \omega (D+\omega L)^{-1}b$, ahol
+az átmenetmátrix: $B_{S(\omega)}= (D+\omega L)^{-1}\big[(1 - \omega)D -\omega U \big]$. A koordinátás alak
+felírásához itt is átírjuk kicsit az iterációt:
+
+\begin{displaymath}
+    (D + \omega L)x^{(k+1)} = (1 - \omega)Dx^{(k)} -\omega Ux^{(k)} + \omega b
+\end{displaymath}
+
+\begin{displaymath}
+    Dx^{(k+1)} =  -\omega Lx^{(k+1)} -\omega Ux^{(k)} + \omega b + (1 - \omega)Dx^{(k)}
+\end{displaymath}
+
+\begin{displaymath}
+    x^{(k+1)} = -\omega D^{-1} \big[Lx^{(k+1)} + Ux^{(k)} - b \big] + (1 - \omega)x^{(k)}
+\end{displaymath}
+
+\begin{displaymath}
+    x^{(k+1)}_{i} =
+    -\frac{\omega}{a_{ii}}
+    \Bigg[
+    \sum_{j=1}^{i-1} a_{ij}x_{j}^{(k+1)} +
+    \sum_{j=i+1}^{n} a_{ij}x_{j}^{(k)}	-
+    b_{i}
+    \Bigg] +
+    (1 - \omega) x_{i}^{(k)}
+    \; (i = 1, ..., n)
+\end{displaymath}
+
+\noindent Vegyük észre, hogy $\omega = 1$ esetén a Gauss-Seidel iterációt kapjuk.\\
+
+\noindent \textbf{Tétel}: Ha a relaxációs módszer konvergens minden kezdővektorból indítva, akkor $\omega \in (0,2)$.\\
+
+\noindent \textbf{Megjegyzés}: Ha $\omega \notin (0,2)$, akkor általában nem konvergens a módszer (bár adott feladat esetén előfordulhat,
+hogy találunk olyan kezdővektort, amelyből indítva konvergál a módszer).\\
+
+\noindent \textbf{Tétel}: Ha $A$ szimmetrikus és pozitív definit és $\omega \in (0, 2)$, akkor a relaxációs módszer konvergens. Ennek
+következménye a Gauss-Seidel iteráció konvergenciája ($\omega = 1$ eset).\\
+
+\noindent \textbf{Tétel}: Ha $A$ tridiagonális, akkor $\varrho(B_{S}) = \varrho(B_{J})^{2}$, azaz a Jacobi és Gauss-Seidel iteráció
+egyszerre konvergens, illetve divergens.\\
+
+\noindent \textbf{Tétel}: Ha $A$ szimmetrikus, pozitív definit és tridiagonális, akkor a $J(1)$, $S(1)$ és $S(\omega)$ $\omega \in (0, 2)$-
+re konvergens, és $S(\omega)$-ra az optimális paraméter értéke:
+
+\begin{displaymath}
+    \omega_{0} = \frac{2}{1 + \sqrt{1 - \varrho(B_{J})^{2}}}
+\end{displaymath}
+
+\subsubsection{Richardson-iteráció}
+
+Legyen $p \in \mathbb{R}$. Így
+
+\begin{displaymath}
+    Ax = b \Longleftrightarrow
+    0 = -Ax + b \Longleftrightarrow
+    0 = -pAx + pb \Longleftrightarrow
+    x = (I-pA)x +pb
+\end{displaymath}
+
+Az iteráció tehát $x^{(k+1)} := (I-pA)x^{(k)} +pb$. Az átmenetmátrix: $B_{R(p)} = I-pA)$. Az
+$r^{(k)} := b - Ax^{(k)} $ vektort maradékvektornak (reziduumvektornak) nevezzük, hiszen
+
+\begin{displaymath}
+    x^{(k+1)} = x^{(k)} - pAx^{(k)} + pb = x^{(k)} + pr^{(k)}
+\end{displaymath}
+
+\begin{displaymath}
+    r^{(k+1)} = b - Ax^{(k+1)} = b - A(x^{(k)} + pr^{(k)}) = r^{(k)} - pAr^{(k)}
+\end{displaymath}
+
+\noindent Tekintsük az előállítás algoritmusát: $r^{(0)} := b - Ax^{(0)}$, továbbá a fentiek miatt:
+
+\begin{displaymath}
+    x^{(k+1)} := x^{(k)} + pr^{(k)}
+\end{displaymath}
+
+\begin{displaymath}
+    r^{(k+1)} := r^{(k)} - pAr^{(k)}
+\end{displaymath}
+
+\noindent \textbf{Tétel}: Ha $A$ szimmetrikus, pozitív definit, a sajátértékei pedig a következők:
+\begin{displaymath}
+    0 < m := \lambda_{1} \leq \lambda_{2} \leq ... \leq \lambda_{n} =: M
+\end{displaymath}
+
+\noindent akkor $p \in (0,\frac{2}{M})$ esetén $R(p)$ konvergens, és az optimális paraméter: $p_{0} = \frac{2}{m + M}$.
+Továbbá igaz, hogy: $\varrho(B_{R(p_{0})}) = \frac{M - m}{M + m}$.
+
+\subsection{Spline-interpoláció}
+
+Az eddig említett interpolációs módszerekben polinomokkal dolgoztunk. Lehetőség van arra is, hogy a megadott pontrendszerre más
+típusú függvényt próbáljunk illeszteni. Igen előnyös tulajdonságokkal rendelkeznek a bizonyos folytonossági előírásoknak is
+megfelelő, szakaszonként polinom függvények, a spline-ok.\\
+
+\noindent \textbf{$l$-edfokú spline}: Legyen adott $\Omega_{n} = \left\{x_{0}, x_{1}, ..., x_{n}\right\}$ az $[a,b]$ intervallum egy
+felosztása, ahol $x_{0}=a, x_{n}=b$ és $l \in \mathbb{N}$. Az $s:[a,b] \to \mathbb{R}$ függvény egy $l$-edfokú spline az
+$\Omega_{n}$-re vonatkozóan, ha:
+
+\begin{enumerate}
+    \item	$s_{|[x_{k-1},x_{k}]}$ egy $l$-edfokú polinom $\forall k = 1,..,n$
+
+    \item	$s \in C^{l-1}[a,b]$, tehát a teljes intervallumon $(l-1)$-szer folytonosan derviálható
+\end{enumerate}
+
+\noindent Jelölés: $s_{l}(\Omega_{n})$ az $\Omega_{n}$-hez tartozó $l$-edfokú spline-ok halmaza.\\
+
+\noindent \textbf{Spline-interpoláció}: Legyenek adottak $x_{k},f(x_{k})$ értékek $k=0,1,..,n$-re és $l \in \mathbb{N}$.
+Keressük azt az $s \in s_{l}(\Omega_{n})$ spline-t, amelyre $s(x_{k}) = f(x_{k})$. Ehhez elő kell állítanunk minden
+intervallumra egy $l$-edfokú polinomot. Ha a polinomokat az együtthatóikkal reprezentáljuk, akkor ez $n(l+1)$ ismeretlen.
+Az előírt feltételek száma: $2n$ interpolációs és $(l-1)(n-1)$ folytonossági feltétel, hiszen csak a belső pontokban kell
+előírni az illető deriváltakra vonatkozó megfelelő folytonossági feltételt. Az így kapott összes feltétel darabszáma
+$(l+1)n - (l-1)$, tehát az egyértelműséghez $l-1$ feltétel hiányzik még. Ezeket úgynevezett peremfeltételekkel adjuk meg.
+Pl. a harmadfokú spline-interpolációhoz 2 peremfeltétel szükséges. Ezek a következők (ezek közül elég egyet választani,
+mert mindegyik 2 feltételt tartalmaz):
+
+\begin{enumerate}
+    \item	Természetes peremfeltétel: $s''(a) = s''(b) = 0$.
+
+    \item	Hermite-féle peremfeltétel: $s'(a) = s_{a}, s'(b) = s_{b}$, ahol $s_{a}, s_{b}$ előre megadott számok.
+
+    \item	Periodikus peremfeltétel (ekkor feltételezzük, hogy $s(a) = s(b)$ is teljesül):
+          $s'(a) = s'(b)$ és $s''(a) = s''(b)$
+\end{enumerate}
+
+\noindent \textbf{Elsőfokú spline előállítása}: Az elsőfokú spline előállítása triviális szakaszonkénti
+lineáris Lagrange-interpolációval.\\
+
+\noindent \textbf{Másodfokú spline előállítása}: Egyetlen peremfeltétel szükséges, legyen a következő: $s'(a) = s_{a}$
+valamilyen $s_{a}$ számra. Az $[x_{0},x_{1}]$ szakaszon Hermite-interpolációval előállítjuk azt a $H_{2}$ másodfokú
+polinomot, amely megfelel az interpolációs feltételeknek és a peremfeltételnek. Az így kapott polinom $x_{1}$-beli
+deriváltja meghatározott, tehát a folytonos deriválhatóság miatt az $[x_{1},x_{2}]$ szakaszon a bal végpontban
+adott a derivált értéke. Ismét Hermite-interpolációt alkalmazva megkapjuk az $[x_{1},x_{2}]$ szakaszhoz tartozó
+polinomot. Ezt az eljárást ismételve állíthatjuk elő a másodfokú interpolációs spline-t.\\
+
+\noindent \textbf{Függvény tartója}: A $supp(f) := \overline{\left\{x \in \mathbb{R}: f(x) \not = 0 \right\}}$ halmazt
+az $f$ függvény tartójának nevezzük.\\
+
+\noindent \textbf{Számegyenes felosztása}: $\Omega_{\infty} := \left\{...,x_{-2},x_{-1},x_{0},x_{1},...x_{n},x_{n+1},...\right\}$\\
+
+\noindent \textbf{B-spline}: A $B_{l,k}, k \in \mathbb{Z}$ $l$-edfokú spline függvények rendszerét B-spline függvényeknek
+nevezzük, ha az alábbi feltételek teljesülnek:
+\begin{enumerate}
+    \item	$supp(B_{l,k}) = [x_{k},x_{k+l+1}]$, azaz a tartója minimális
+
+    \item	$B_{l,k}(x) \geq 0$
+
+    \item	$\displaystyle\sum_{k \in \mathbb{Z}}B_{l,k}(x) = 1$
+\end{enumerate}
+
+\end{document}

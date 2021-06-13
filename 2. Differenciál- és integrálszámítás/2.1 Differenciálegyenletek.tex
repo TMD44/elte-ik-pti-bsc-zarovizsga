@@ -1,0 +1,176 @@
+\documentclass[margin=0px]{article}
+
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{subcaption}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+
+\renewcommand{\figurename}{ábra}
+\newenvironment{tetel}[1]{\paragraph{#1 \\}}{}
+\newcommand{\R}{\mathbb{R}}
+
+\pagestyle{fancy}
+\lhead{\it{PTI BSc Záróvizsga tételek}}
+\rhead{2.1 Differenciálegyenletek}
+
+\title{\textbf{{\Large ELTE IK - Programtervező Informatikus BSc} \vspace{0.2cm} \\ {\huge Záróvizsga tételek}} \vspace{0.3cm} \\ 2.1 Differenciálegyenletek}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{A kezdeti érték probléma}
+\begin{description}
+    \item[Differenciál egyenlet] \hfill \\
+        $ 0 < n \in \mathbb{N}, \ I \subset \R$ nyílt intervallum, \\
+        $ \Omega := I_1 \times ... \times I_n \subset \R^n$, ahol $ I_1,...,I_n \subset \R$ nyílt intervallum \\
+        $f:I\times\Omega \rightarrow \R^n, \ f \in C $
+
+        Határozzuk meg a $ \varphi \in I \rightarrow \Omega$ függvényt úgy, hogy:
+        \begin{itemize}
+            \item $ D_{\varphi} $ nyílt intervallum
+            \item $ \varphi \in D $
+            \item $ \varphi'(x) = f(x, \varphi(x)) \quad (x \in D_{\varphi}) $
+        \end{itemize}
+
+        Ezt a feladatot nevezzük differenciál egyenletnek.
+    \item[Kezdeti érték probléma] \hfill \\
+        Ha az előzőekhez még adottak: $ \tau \in I$, és $ \xi \in \Omega$ \\
+        Illetve a $\varphi$ függvényre még teljesül:
+        \begin{itemize}
+            \item $\tau \in D_{\varphi}$ és $ \varphi(\tau) = \xi $
+        \end{itemize}
+
+        Akkor kezdeti érték problémának (Cauchy feladatnak) nevezzük.
+\end{description}
+\section{Lineáris, ill. magasabb rendű lineáris differenciálegyenletek}
+\subsection{Lineáris differenciálegyenletek}
+\begin{description}
+    \item[Definíció] \hfill \\
+        A lineáris differenciálegyenlet olyan differenciálegyenlet, melyre:\\
+        $ n=1, \quad I,I_1 \subset \R $ nyílt intervallumok, $f:I\times I_1 \rightarrow \R$, ahol \\
+        $g,h : I \rightarrow \R, \ g,h \in C, \ I_1 := \R$ és \\
+        $f(x,y) := g(x)\cdot y + h(x) \quad (x \in I, y \in I_1 = \R) $\\
+        $ \Rightarrow \varphi'(x) = f(x, \varphi(x)) = g(x) \cdot \varphi(x) + h(x) \quad (x \in D_{\varphi})$
+    \item[Homogenitás] \hfill \\
+        A lineáris differenciálegyenlet homogén ha $ h \equiv 0$ (különben inhomogén)
+    \item[Kezdeti érték probléma] \hfill
+        \begin{itemize}
+            \item Minden lineáris differenciálegyenletre vonatkozó kezdeti érték probléma megoldható és \\
+                  $\forall \varphi, \psi $ megoldásokra: $ \varphi(t) = \psi(t) \quad (t \in D_{\varphi} \cap D_{\psi} )$
+            \item Minden homogén lineáris differenciálegyenlet ($\varphi : I \rightarrow \R$) megoldása a következő alakú: \\
+                  $ c\varphi_0$, ahol \\
+                  $c \in \R$ és $\varphi_0(t) = e^{G(t)} \quad (G:I\rightarrow\R, \ G \in D, $ és $ G' = g)$
+            \item Állandók variálásának módszere:\\
+                  $ \exists m:I\rightarrow\R, \ m \in D : m\cdot\varphi_0$ megoldása az (inhomogén) lineáris differenciálegyenletnek
+            \item Partikuláris megoldás: \\
+                  $M := \{ \varphi : I \rightarrow \R : \varphi'(t) = g(t)\cdot\varphi(t) + h(t) \ (t \in I)\} $ \\
+                  $M_h := \{ \varphi : I \rightarrow \R : \varphi'(t) = g(t)\cdot\varphi(t) \ (t \in I)\} $\\
+                  $\Rightarrow \forall \psi \in M : M = \psi + M_h = \{\varphi + \psi : \varphi \in M_h\}$\\
+                  (És itt $\psi$ az előzőek alapján $m\cdot\varphi_0$ alakban írható)
+            \item Példa: Radioaktív bomlás: \\
+                  $ m_0 > 0$ - kezdeti anyagmennyiség \\
+                  $ m \in \R \rightarrow \R $ - tömeg-idő függvénye, ahol \\
+                  $m(t)$ - a meglévő anyag mennyisége \\
+                  $ m \in D \Rightarrow \dfrac{m(t) - m(t+\Delta t)}{\Delta t} \quad (\Delta t \neq 0) $ - átlagos bomlási sebesség \\
+                  $ \dfrac{m(t) - m(t+\Delta t)}{\Delta t} \xrightarrow[\Delta t \rightarrow 0]{} -m'(t) $, ami megfigyelés alapján $ \approx m(t)$ \\
+
+                  azaz: \\
+                  $ m'(t) = - \alpha \cdot m(t) \quad (t\in\R, 0 < \alpha \in \R)$\\
+                  $ m(0) = m_0 $ \\
+                  \rule{3cm}{0.2pt} \\
+                  Homogén lineáris differenciálegyenlet (kezdeti érték probléma): \\
+                  $ g \equiv -\alpha, \ \tau :=0, \ \xi := m_0 $ \\
+                  $ \Rightarrow G(t) = -\alpha t \quad (t\in\R) \Rightarrow \varphi_0(t) = e^{-\alpha t} \quad (t \in \R)$ \\
+                  $ \Rightarrow \exists c \in \R : m(t) = c\cdot e^{-\alpha t} \quad (t \in \R)$, ahol \\
+                  $m(0) = c = m_0 \Longrightarrow m(t) = m_0e^{-\alpha t} \quad (t \in \R)$ \\
+                  Ha $ T \in \R : m(T) = \dfrac{m_0}{2} $ (felezési idő) \\
+                  $\Rightarrow \dfrac{m_0}{2} = m_0e^{-\alpha T} \Rightarrow \dfrac{1}{2} = e^{-\alpha T} \Rightarrow e^{\alpha T} = 2$ \\
+                  $\Rightarrow T = \dfrac{ln(2)}{\alpha} $
+        \end{itemize}
+\end{description}
+\subsection{Magasabb rendű lineáris differenciálegyenletek}
+\begin{description}
+    \item[Definíció] \hfill \\
+        $ 0 < n \in \mathbb{N}, I \subset \R$ nyílt, $ a_0, ... ,a_{n-1} :I \rightarrow \R$  folytonos és $ c: I \rightarrow \R$ folytonos. \\
+        Keressünk olyan $ \varphi \in I \rightarrow \mathbb{K}$ függvényt, melyre:
+        \begin{itemize}
+            \item $ \varphi \in D^n$
+            \item $ D_{\varphi}$ nyílt intervallum
+            \item $ \varphi^{(n)}(x) + \sum\limits_{k=0}^{n-1}a_k(x) \cdot \varphi^{(k)}(x) = c(x) \quad (x \in D_{\varphi}) $
+        \end{itemize}
+
+        Ezt $n$-edrendű lineáris differenciálegyenletnek nevezzük. ($n=1$ esetben Lineáris diff. egyenlet). Ha még: \\
+        $ \tau \in I, \ \xi_0, ... , \xi_{n-1} \in \mathbb{K}$ és
+        \begin{itemize}
+            \item $ \tau \in D_{\varphi}$ és $ \varphi^{(k)}(\tau) = \xi_k \quad (k = 0...n-1) $
+        \end{itemize}
+        Akkor Kezdeti érték problémáról beszélünk.
+
+    \item[Homogenitás] \hfill \\
+        Amennyiben $c(x) = 0$ homogén $n$-edrendű lineáris differenciálegyenletről beszélünk. Tehát homogén és inhomogén egyenletek megoldásainak halmazai: \\
+        $ M_h := \{\varphi : I \rightarrow \mathbb{K} : \varphi \in D^n, \ \varphi^{(n)} + \sum\limits_{k=0}^{n-1}a_k\cdot\varphi^{(k)} = 0 \} $ \\
+        $ M := \{\varphi : I \rightarrow \mathbb{K} : \varphi \in D^n, \ \varphi^{(n)} + \sum\limits_{k=0}^{n-1}a_k\cdot\varphi^{(k)} = c \} $ \\
+        (Itt $M_h \ n$-dimenziós lineáris tér, így valamilyen $ \varphi_1,...,\varphi_n \in M_h$ bázist, más néven alaprendszert alkot.)
+    \item[Állandó együtthatós eset] \hfill \\
+        Ebben az esetben $a_0,...,a_{n-1} \in \R$
+        \begin{itemize}
+            \item Karakterisztikus polinom szerepe \\
+                  Legyen $P(t) := t^n + \sum\limits_{k=0}^{n-1}a_kt^k \quad (t \in \mathbb{K})$ karakterisztikus polinom és \\
+                  $ \varphi_\lambda(x) := e^{\lambda x} \quad (x \in \R, \lambda \in \mathbb{K}) $ \\\\
+                  Ekkor: $ \varphi_\lambda \in M_h \Longleftrightarrow P(\lambda) = 0 $\\
+                  Sőt ha $ \lambda $ $r$-szeres gyöke $P$-nek, és \\
+                  $ \varphi_{\lambda,j}(x) := x^je^{\lambda x} \ (j = 0..r-1, x\in\R)$, akkor:
+                  $ \varphi_{\lambda,j} \in M_h \Longleftrightarrow \varphi_{\lambda, j}^{(n)}+\sum\limits_{k=0}^{n-1}a_k\varphi_{\lambda, j}^{(k)} $ \\
+                  azaz $P(\lambda)^{(j)} = 0 \quad (j = 0..r-1)$
+            \item Valós megoldások \\
+                  Legyen $ \lambda = u+iv \quad (u,v \in \R, v\neq0, i^2 = -1) $ \\
+                  $ \Rightarrow $ az $ x \mapsto x^je^{ux}cos(vx)$, és $x \mapsto x^je^{ux}sin(vx)$ függvények valós alaprendszert (bázist) alkotnak ($M_h$-ban)
+        \end{itemize}
+    \item[Példa: Rezgések] \hfill \\
+        Írjuk le egy egyenes mentén, rögzített pont körül rezgőmozgást végző $m$ tömegű tömegpont mozgását, ha ismerjük a megfigyelés kezdetekor elfoglalt helyét és az akkori sebességét! \\
+        $ \varphi \in \R \rightarrow \R, \varphi \in D^2$ : kitérés-idő függvény \\
+        $ m > 0 $ : tömeg \\
+        $ F \in \R \rightarrow \R $ : kitérítő erő \\
+        $ \alpha > 0 $ : visszatérítő erő, mely arányos $ \varphi $-vel \\
+        $ \beta \geq 0 $ : fékezőerő, mely arányos a sebességgel. \\
+        $ \Longrightarrow $ (Newton-féle mozgástörvény alapján):\\
+        $ m \cdot \varphi'' = F - \alpha\varphi-\beta\varphi'$\\
+        $ \varphi(0) = s_0, \varphi'(0) = s'_0 $\\
+        \rule{4cm}{0.2pt} \\
+        Másodrendű lineáris differenciál egyenlet (kezdeti érték probléma)\\
+        Standard alakba írva: $ \varphi'' + \dfrac{\beta}{m}\varphi' + \dfrac{\alpha}{m}\varphi = \dfrac{F}{m} $
+
+        Tekintsük kényszerrezgésnek a periodikus külső kényszert, amikor: \\
+        $ \dfrac{F(x)}{m} = Asin(\omega x )  \quad [A>0$ (amplitúdó), $ \omega > 0$ (kényszerfrekvencia)] \\
+            Ekkor $ \omega_0 := \sqrt{\dfrac{\beta}{m}} $ - saját frekvencia\\
+            és $\varphi''(x) + \omega_0^2\varphi(x) = Asin(\omega x) $ \\
+            Melynek karakterisztikus polinomja : $ P(t) = t^2+\omega_0^2 \quad (t \in \R) $ \\
+            Megoldásai: $ \lambda = \pm \ \omega_0i $ \\
+
+            Korábban láttuk, hogy ha $ \lambda = u+iv$ akkor $ x \mapsto x^je^{ux}cos(vx)$, és $x \mapsto x^je^{ux}sin(vx)$ függvények valós alaprendszert (bázist) alkotnak ($M_h$-ban). Így $ \varphi(x) = c_1cos(\omega_0x) + c_2sin(\omega_0x) $ alakban írható mely fázisszög segítségével: $ d\cdot sin(\omega_0x+\delta) \quad (d = \sqrt{c_1^2+c_2^2}, \delta \in \R)$ alakra átírható. Így: \\
+        $ M_h =  \{ d\cdot sin(\omega_0x+\delta)\}$
+
+        Ekkor már könnyen megadhatunk egy partikuláris megoldást:
+        \begin{itemize}
+            \item $\omega \neq \omega_0$ esetén partikuláris megoldás: \\
+                  $ x \rightarrow q\cdot sin(\omega x) $\\
+                  És $ q = \dfrac{A}{\omega_0^2-\omega^2} $ kielégíti a $-q\omega^2sin(\omega x)+\omega_0^2q\cdot sin(\omega x) = Asin(\omega x) $ egyenletet.
+                  Tehát: \\
+                  $ \varphi(x) = d\cdot sin(\omega_0x + \delta)+\dfrac{A}{\omega_0^2-\omega^2}sin(\omega x) $ megoldás két harmonikus rezgés összege.
+            \item $ \omega = \omega_0 $ (rezonancia) esetén partikuláris megoldás: \\
+                  $ x \rightarrow qx\cdot cos(\omega x) $\\
+                  És $ q = \dfrac{-A}{2\omega} $ kielégíti a $-2q\omega \cdot sin(\omega x)- q\omega^2x\cdot cos(\omega x) +\omega^2qx\cdot cos(\omega x) = Asin(\omega x) $ egyenletet.
+                  Tehát: \\
+                  $ \varphi(x) = d\cdot sin(\omega x + \delta)-\dfrac{A}{2\omega}x\cdot cos(\omega x) $ megoldás egy harmonikus és egy aperiodikus rezgés összege.\\
+                  (Ebben az esetben az idő (x) elteltével a $\varphi $ értéke nő. Bizonyos modellekben ez a "rendszer szétesését" idézi elő)
+        \end{itemize}
+\end{description}
+\end{document}

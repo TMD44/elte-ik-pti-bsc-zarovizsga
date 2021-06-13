@@ -1,0 +1,65 @@
+\documentclass[margin=0px]{article}
+
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[a4paper, margin=0.7in]{geometry}
+\usepackage{amsthm}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+
+\onehalfspacing
+
+\renewcommand{\figurename}{ábra}
+\newenvironment{tetel}[1]{\paragraph{#1 \\}}{}
+
+\pagestyle{fancy}
+\lhead{\it{PTI BSc Záróvizsga tételek}}
+\rhead{22. Funkcionális programozás}
+
+\title{\textbf{{\Large ELTE IK - Programtervező Informatikus BSc} \vspace{0.2cm} \\ {\huge Záróvizsga tételek}} \vspace{0.3cm} \\ 22. Funkcionális programozás}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{tetel}{Funkcionális programozás}
+    Funkcionális programozási nyelvek jellemzői: lusta és mohó kiértékelési stratégiák jellemzése és összehasonlítása, hivatkozási helyfüggetlenség, statikus típusozottság, Curry-féle elv, margó szabály, alaptípusok, konverziók, függvények definiálása és típusozása, mintaillesztés, őrfeltételek, esetszétválasztás, rekurzió, lokális definíciók, magasabbrendű függvények, névtelen függvények, függvénykompozíció, halmazkifejezések, típusosztályok, parametrikus (paraméteres) és ad-hoc polimorfizmus, típusszinonimák, algebrai adattípusok definiálása.
+\end{tetel}
+
+\section{Lusta és mohó kiértékelés}
+A funkcionális nyelvek kifejezés kiértékelése lehet lusta (lazy), vagy mohó (strict). A lusta kiértékelés során a függvények argumentumai csak akkor értékelődnek ki, ha azokra feltétlenül szükség van. A Clean ilyen lusta kiértékelést alkalmaz, míg az Erlang inkább a szigorú nyelvek közé tartozik. A mohó kiértékelés minden esetben kiértékeli a kifejezéseket, mégpedig olyan hamar, ahogyan az lehetséges. A lusta kiértékelés a inc 4+1 kifejezést elsőként (4+1)+1 kifejezésként interpretálná, míg a mohó rendszer azonnal 5 + 1 formára hozná.
+
+\section{Hivatkozási helyfüggetlenség}
+A kifejezések értéke nem függ attól, hogy a program szövegében hol fordulnak elő, vagyis bárhol helyezzük el ugyanazt a kifejezést, az eredménye ugyanaz marad. Ez a tisztán funkcionális nyelvekre igaz leginkább, ahol a függvényeknek nincs mellékhatása, így a kiértékelésük során sem változtatják meg az adott kifejezést.
+
+\section{Statikus típusrendszer}
+A statikus típusrendszerekben nem kötelező a deklarációk megadása, de követelmény, hogy a kifejezés legáltalánosabb típusát a fordítóprogram minden esetben ki tudja következtetni. A statikus rendszer alapja a Hindley-Milner polimorfikus típusrendszer.
+
+Természetesen a típusok megadásának az elhagyhatósága nem azt jelenti, hogy azok nincsenek jelen az adott nyelvben. Igenis vannak típusok, csak a kezelésükről, valamint a kifejezések helyes kiértékeléséről a típuslevezető rendszer és a fordítóprogram gondoskodik.
+
+\section{Curry-féle elv}
+A Curry módszer a részleges függvény alkalmazás, ami azt jelenti, hogy a több paraméteres függvények visszatérési értéke lehet egy függvény és a maradék paraméterek. Ez alapján minden függvény tekinthető egyváltozós függvénynek. Amennyiben a függvénynek két változója van, akkor csak az egyiket tekintjük a függvényhez tartozó paraméternek. A paraméter megadása egy új egyváltozós függvényt hoz létre, amit alkalmazhatunk a második változóra. A módszer több változó esetén is működőképes. Erlangban és F\#-ban nincs ilyen nyelvi elem, de a lehetősége adott. Készítéséhez függvény kifejezést használhatunk.
+
+\section{Margó szabály}
+Összetartozó kifejezések csoportjának azonosítására és deklarációk hatáskörének korlátozására alkalmas a bal oldali margó szélességének változtatása.
+
+\section{Alaptípusok}
+TODO
+
+\section{Mintaillesztés}
+A mintaillesztés függvényekre alkalmazva azt jelenti, hogy a függvény több ággal rendelkezhet, és az egyes ágakhoz (clause) a formális paraméterek különböző mintáit rendelhetjük hozzá. A függvény hívásakor mindig az az ág fut le, amelynek a formális paramétereire a híváskor megadott aktuális paraméterek illeszkednek. Az OO nyelvekben az ilyen függvényeket overload függvénynek nevezzük. A mintaillesztés alkalmazható változók, és listák mintaillesztése esetén is, valamint elágazások ágainak (branch) a kiválasztására.
+
+\section{Magasabbrendű függvények}
+Funkcionális nyelvekben lambda-kifejezéseket, vagyis speciálisan leírt függvényeket adhatunk át más függvények paraméter listájában. Természetesen nem a függvényhívás kerül a paraméterek közé, hanem a függvény prototípusa.
+
+Számos programozási nyelv lehetőséget ad arra, hogy változókba kössük a lambda-függvényeket, majd az így megkonstruált változókat később függvényként használjuk. A lambda-kifejezéseket elhelyezhetjük lista-kifejezésekben is. A függvénnyel való paraméterezés segítségünkre van abban, hogy teljesen általános függvényeket, vagy programokat hozzunk létre, ami kifejezetten hasznos szerver alkalmazások készítésekor.
+
+\section{Halmazkifejezések}
+A különböző nyelvi konstrukciók mellett a funkcionális nyelvekben számos különleges adattípust is találunk, mint a rendezett n-es, vagy ismertebb nevén a tuple, valamint a halmazkifejezések, és az ezekhez konstruálható lista generátorok. A lista adattípus a Zermelo-Fraenkel féle halmazkifejezésen alapul. Tartalmaz egy generátort, amely az elemek listába tartozásának feltételét írja le, valamint azt, hogy a lista egyes elemeit hogyan, és milyen számban kell előállítani. Ezzel a technológiával elvben végtelen listát is képesek vagyunk leírni az adott programozási nyelven, mivel nem a lista elemeit, hanem a lista definícióját írjuk le.
+
+
+
+\end{document}

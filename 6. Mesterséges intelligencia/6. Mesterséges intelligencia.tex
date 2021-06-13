@@ -1,0 +1,126 @@
+\documentclass[margin=0px]{article}
+
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[a4paper, margin=0.7in]{geometry}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{t1enc}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+
+\onehalfspacing
+
+\newenvironment{tetel}[1]{\paragraph{#1 \\}}{}
+
+\pagestyle{fancy}
+\lhead{\it{PTI BSc Záróvizsga tételek}}
+\rhead{6. Mesterséges intelligencia}
+
+\title{\textbf{{\Large ELTE IK - Programtervező Informatikus BSc} \vspace{0.2cm} \\ {\huge Záróvizsga tételek}} \vspace{0.3cm} \\ 6. Mesterséges intelligencia}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{tetel}{Mesterséges intelligencia}
+    MI problémák és az útkeresési feladat kapcsolata. Modellezési technikák (pl. állapottér modell, dekompozíciós modell). Heurisztikus útkereső algoritmusok: lokális keresések (hegymászó módszer, tabu-keresés, szimulált hűtés), visszalépéses keresés, heurisztikus gráfkereső eljárások (A, A*, $A^C$, B algoritmusok). Kétszemélyes játékok.
+\end{tetel}
+
+\section{Bevezetés}
+
+Az MI az intelligens gondolkodás számítógépes reprodukálása szempontjából hasznos elveket, módszereket, technikákat kutatja, fejleszti, rendszerezi. Megoldandó feladatai: nehezek, mert ezek problématere hatalmas, a megoldás megkeresése kellő intuíció hiányában kombinatorikus robbanáshoz vezethet. A szoftver intelligensen viselkedik, és sajátos eszközöket használ. A reprezentáció átgondolt a feladat modellezéséhez, és az algoritmusok hatékonyak, heurisztikával megerősítve.
+
+\section{Útkeresési problémák}
+
+Útkeresési problémaként sok MI feladat fogalmazható meg úgy, hogy a feladat modellje alapján megadunk egy olyan élsúlyozott irányított gráfot, amelyben adott csúcsból adott csúcsba vezető utak jelképezik a feladat egy-egy megoldását. Ezt a feladat \textit{gráfreprezentációjának} is szokás nevezni, amely magába foglal egy úgynevezett \textit{$\delta$-gráfot} (olyan élsúlyozott irányított gráf, ahol egy csúcsból kivezető élek száma véges, és az élek költségére megadható egy $\delta$ pozitív alsó korlát), az abban kijelölt startcsúcsot és egy vagy több célcsúcsot. Ebben a reprezentációs gráfban keresünk egy startcsúcsból kiinduló célcsúcsba futó utat, esetenként egy legolcsóbb ilyet.
+
+\section{Modellezési technikák}
+\subsection{Állapottér-reprezentáció}
+
+Állapottér-reprezentáció egy olyan lehetséges (de nem az egyetlen) módszer a feladatok modellezésére, amelyet aztán természetes módon lehet gráfreprezentációkét is megfogalmazni. Négy eleme van:
+\begin{itemize}
+    \item \textit{Állapottér}, amely a probléma homlokterében álló adat (objektum) lehetséges értékeinek (állapotainak) halmaza. Gyakran egy alaphalmaz, amelyet egy alkalmas invariáns leszűkít.
+    \item \textit{Műveletek} (előfeltétel+hatás), amelyek állapotból állapotba vezetnek.
+    \item \textit{Kezdőállapot}(ok) vagy azokat leíró kezdőfeltétel.
+    \item \textit{Célállapot}(ok) vagy célfeltétel.
+\end{itemize}
+Az \textit{állapot-gráf} (egy speciális reprezentációs gráf) az állapotokat, mint csúcsokat, a műveletek hatásait, mint éleket tartalmazza.
+Az állapottér nem azonos a problématérrel, hiszen a problématér elemei a startcsúcsból kivezető utak (műveletsorozatok), nem pedig az állapotok (csúcsok). A megoldás a problématér egy eleme, ami egy olyan műveletsorozat, ami startcsúcsból célcsúcsba vezet.
+
+\subsection{Dekompozíciós modell}
+A probléma dekompozíciólényege az, hogy egy feladatot részfeladatokra bontunk, majd azokat tovább részletezzük, amíg nyilvánvalóan megoldható feladatokat nem kapunk. A reprezentációhoz meg kell adnunk:
+\begin{itemize}
+    \item a feladat részproblémáinakáltalános leírását,
+    \item az eredeti problémát,
+    \item az egyszerű problémákat, amelyekről könnyen eldönthető, hogy megoldhatók-e vagy sem, és
+    \item a dekomponálóműveleteket:
+\end{itemize}
+Dekomponálóműveleteket nagyon nehéz megtalálni:
+\begin{itemize}
+    \item Nem biztos, hogy megtaláljuk.
+    \item Hamis dekomponálóműveletek.
+    \item Nem minden feladat dekomponálható.
+\end{itemize}
+Az egyszerű probléma felismerése sem egyértelmű. A megoldás kiolvasása sem nyilvánvaló.
+Egy dekompozíciós eprezentációhoz tartozó $( R, s, T )$ gráfreprezentációban
+\begin{itemize}
+    \item az $R = ( N, A, c )$ egy olyan ÉS/VAGY gráf (dekompozíciósgráfban), ahol
+    \item {\it N} a részprobémákat,
+    \item {\it A} a dekomponálóműveleteket,
+    \item {\it c} azok költségeit szimbolizálják,
+    \item {\it s} az eredeti problémát,
+    \item {\it T} az egyszerű problémákat jelöli.
+\end{itemize}
+
+A probléma megoldását egy s $\rightarrow$ M $\subseteq$ T közönséges irányított kört nem tartalmazó hiperút, az úgynevezett megoldásgráf megtalálása jelenti. Az eredeti probléma megoldása ebből a megoldásgráfból nyerhető ki. A megoldás költsége többnyire nem függ a megoldásgráf költségétől, ezért nem cél az optimális megoldásgráf előállítása.
+
+\section{Keresések}
+
+Egy általános \textit{kereső rendszer} részei: a \textit{globális munkaterület} (a keresés memóriája), a \textit{keresési szabályok} (a memória tartalmát változtatják meg), és a \textit{vezérlési stratégia} (adott pillanatban alkalmas szabályt választ). A vezérlési stratégiának van egy általános, elsődleges eleme (ez lehet nemmódosítható vagy módosítható), lehet egy másodlagos (az alkalmazott reprezentációs modell sajátosságait kihasználó) eleme és a konkrét feladatra építő eleme. Ez utóbbi a \textit{heurisztika}, a konkrét feladatból származó extra ismeret, amelyet közvetlenül a vezérlési stratégiába építünk be az eredményesség és a hatékonyság javítása céljából.
+
+\section{Lokális keresések}
+
+A lokális keresések egyetlen aktuális csúcsot és annak szűk környezetét tárolják a globális munkaterületen. Keresési szabályai az aktuális csúcsot minden lépésben a szomszédjai közül vett lehetőleg  ,,jobb” gyerekcsúccsal cserélik le. A vezérlési stratégiájuk a ,,jobbság” eldöntéséhez egy \textit{rátermettségi függvényt} használ, amely annál jobb értéket ad egy csúcsra, minél közelebb esik az a célhoz. Mivel a keresés ,,elfelejti”, hogy honnan jött, a döntések nem vonhatók vissza, ez egy \textit{nem-módosítható vezérlési stratégia}.
+Lokális kereséssel megoldható feladatok azok, ahol egy lokálisan hozott rossz döntés nem zárja ki a cél megtalálását. Ehhez vagy egy erősen összefüggő reprezentációs-gráf, vagy jó heurisztikára épített
+célfüggvény kell. Jellemző alkalmazás: adott tulajdonságú elem keresése, függvény optimumának keresése.
+\begin{itemize}
+    \item \textit{Hegymászó algoritmus}: Minden lépésben az aktuális csúcs legjobb gyermekére lép, de kizárja a szülőre való visszalépést. Zsákutcába (aktuális csúcsból nem vezet ki él) beragad, körök mentén végtelen ciklusba kerülhet, ha a rátermettségi függvény nem tökéletes.
+    \item \textit{Tabu keresés}: Az aktuális csúcson (n) kívül nyilvántartja még az eddig legjobbnak bizonyult csúcsot (n*) és az utolsó néhány érintett csúcsot; ez a (sor tulajdonságú) tabu halmaz. Minden lépésben az aktuális csúcs gyermekei közül, kivéve a tabu halmazban levőket, a legjobbat választja új aktuális csúcsnak, (ezáltal felismeri a tabu halmaz méreténél nem nagyobb köröket), frissíti a tabu halmazt, és ha n jobb, mint az n*, akkor n*-ot lecseréli n-re.
+    \item \textit{Szimulált hűtés algoritmusa}: A következő csúcs választása véletlenszerű. Ha a kiválasztott csúcs (r) célfüggvény-értéke jobb, mint az aktuális csúcsé (n), akkor odalép, ha rosszabb, akkor az új csúcs elfogadásának valószínűsége fordítottan arányos f(n) - f(r) különbséggel. Ez az arány ráadásul folyamatosan változik a keresés során: ugyanolyan különbség esetén kezdetben nagyobb, később kisebb valószínűséggel fogja a rosszabb értékű r csúcsot választani.
+\end{itemize}
+
+\section{Visszalépéses keresések}
+
+A startcsúcsból az aktuális csúcsba vezető utat (és az arról leágazó még ki nem próbált éleket) tartja nyilván (globális munkaterületen), a nyilvántartott út végéhez egy új (ki nem próbált) élt fűzhet vagy a legutolsó élt törölheti (visszalépés szabálya), a visszalépést a legvégső esetben alkalmazza. A visszalépés teszi lehetővé azt, hogy egy korábbi továbblépésről hozott döntés megváltozhasson. Ez tehát egy \textit{módosítható vezérlési stratégia}. A keresésbe sorrendi és vágó heurisztika építhető. Mindkettő lokálisan, az aktuális csúcsból kivezető, még ki nem próbált élekre vonatkozik.
+Visszalépés feltételei: zsákutca, zsákutca torkolat, kör, mélységi korlát.
+\begin{itemize}
+    \item VL1 (nincs kör- és mélységi korlát figyelés) véges körmentes irányított gráfokon terminál, és ha van megoldás, akkor talál egyet.
+    \item VL2 (általános) $\delta$-gráfokon terminál, és ha van megoldás a mélységi korláton belül, akkor talál egyet.
+\end{itemize}
+Könnyen implementálható, kicsi memória igényű, mindig terminál, és ha van (a mélységi korlát alatt), akkor megoldást talál. De nem garantál optimális megoldást, egy kezdetben hozott rossz döntést csak nagyon sok lépés után képes korrigálni és egy zsákutca-szakaszt többször is bejárhat, ha abba többféle úton is el lehet jutni.
+
+\section{Gráfkeresések}
+
+A globális munkaterületén a startcsúcsból kiinduló már feltárt utak találhatók (ez az ún. \textit{kereső gráf}), külön megjelölve az utak azon csúcsait, amelyeknek még nem (vagy nem eléggé jól) ismerjük a rákövetkezőit. Ezek a \textit{nyílt csúcsok}. A keresés szabályai egy nyílt csúcsot terjesztenek ki, azaz előállítják (vagy újra előállítják) a csúcs összes rákövetkezőjét. A vezérlési stratégia a legkedvezőbb nyílt csúcs kiválasztására törekszik, ehhez egy \textit{kiértékelő függvényt} (f) használ. Mivel egy nyílt csúcs, amely egy adott pillanatban nem kerül kiválasztásra, később még kiválasztódhat, ezért itt egy módosítható vezérlési stratégia valósul meg.
+A keresés minden csúcshoz nyilvántart egy odavezető utat (\textbf{$\pi$} visszamutató pointerek segítségével), valamint az út költségét (g). Ezeket az értékeket működés közben alakítja ki, amikor a csúcsot először felfedezi vagy később egy olcsóbb utat talál hozzá. Mindkét esetben (amikor módosultak a csúcs ezen értékei) a csúcs nyílttá válik. Amikor egy már korábban kiterjesztett csúcs újra nyílt lesz, akkor a már korábban felfedezett leszármazottainál a visszafelé mutató pointerekkel kijelölt út költsége nem feltétlenül egyezik majd meg a nyilvántartott g értékkel, és az sem biztos, hogy ezek az értékek az eddig talált legolcsóbb útra vonatkoznak, vagyis előfordulhat, hogy elromlik a keresőgráf korrektsége.
+\begin{itemize}
+    \item Nem-informált gráfkeresések: \textit{mélységi gráfkeresés} ($f = -g$, minden $(n,m)$ élre $c(n,m)=1$), \textit{szélességi gráfkeresés} ($f = g$, $c(n,m)=1$), \textit{egyenletes gráfkeresés} ($f = g$)
+    \item Heurisztikus gráfkeresések f-je a h heurisztikus függvényre épül, amely minden csúcsban a hátralevő optimális h* költséget becsli. Ilyen az \textit{előre tekintő gráfkeresés} ($f = h$), az \textit{A algoritmus} ($f = g+h, h \geq 0$), az \textit{A* algoritmus} ($f = g+h, h^* \geq h \geq 0$ – h megengedhető), az \textit{$A^C$ algoritmus} ($f = g+h, h^* \geq h \geq 0$, minden $(n,m)$ élre $h(n)-h(m) \leq c(n,m)$), és \textit{B algoritmus} (ahol az $f= g+h$, $h \geq 0$ helyett a g-t használjuk a kiterjesztendő csúcs kiválasztására azon nyílt csúcsok közül, amelyek f értéke kisebb, mint az eddig kiterjesztett csúcsok f értékeinek maximuma).
+\end{itemize}
+Véges $\delta$-gráfokon minden gráfkeresés terminál, és ha van megoldás, talál egyet. A nevezetes gráfkeresések többsége végtelen nagy gráfokon is találnak megoldást, ha van megoldás. (Kivétel az előre-tekintő keresés és a mélységi korlátot nem használó mélységi gráfkeresés.)
+Az A*, $A^C$ algoritmusok optimális megoldást találnak, ha van megoldás. Az $A^C$ algoritmus egy csúcsot legfeljebb egyszer terjeszt csak ki.
+Egy gráfkeresés memória igényét a kiterjesztett csúcsok számával, futási idejét ezek kiterjesztéseinek számával mérjük. (Egy csúcs általában többször is kiterjesztődhet, de $\delta$-gráfokban csak véges sokszor.) A* algoritmusnál a futási idő legrosszabb esetben exponenciálisan függ a kiterjesztett csúcsok számától, de ha olyan heurisztikát választunk, amelyre már $A^C$ algoritmust kapunk, akkor a futási idő lineáris lesz. Persze ezzel a másik heurisztikával változik a kiterjesztett csúcsok száma is, így nem biztos, hogy egy $A^C$ algoritmus ugyanazon a gráfon összességében kevesebb kiterjesztést végez, mint egy csúcsot többször is kiterjesztő A* algoritmus. A B algoritmus futási ideje négyzetes, és ha olyan heurisztikus függvényt használ, mint az A* algoritmus (azaz megengedhetőt), akkor ugyanúgy optimális megoldást talál (ha van megoldás) és a kiterjesztett csúcsok száma (mellesleg a halmaza is) megegyezik az A* algoritmus által kiterjesztett csúcsokéval.
+
+\section{Kétszemélyes (teljes információjú, zéró összegű, véges) játékok}
+
+A játékokat állapottér-reprezentációval szokás leírni, és az állapot-gráfot faként ábrázolják.
+A \textit{győztes (vagy nem-vesztes) stratégia} egy olyan elv, amelyet betartva egy játékos az ellenfél minden lépésére tud olyan választ adni, hogy megnyerje (ne veszítse el) a játékot. Valamelyik játékosnak biztosan van győztes (nem-vesztes) stratégiája. Győztes (nem-vesztes) stratégia keresése a \textit{játékfában} kombinatorikus robbanást okozhat, ezért e helyett részfa kiértékelést szoktak alkalmazni a soron következő jó lépés meghatározásához.
+A \textit{minimax} algoritmus az aktuális állásból felépíti a játékfa egy részét, kiértékeli annak leveleit aszerint, hogy azok által képviselt állások milyen mértékben kedveznek nekünk vagy az ellenfélnek, majd szintenként váltakozva az ellenfél szintjein a gyerekcsúcsok értékeinek minimumát, a saját szintjeinken azok maximumát futtatjuk fel a szülőcsúcshoz. Ahonnan a gyökérhez kerül érték, az lesz soron következő lépésünk.
+A minimax legismertebb módosítása az \textit{alfa-béta} algoritmus, amely egyfelől kisebb memória igényű (egyszerre csak egy ágat tárol a vizsgált részfából), másfelől egy sajátos vágási stratégia miatt jóval kevesebb csúcsot vizsgál meg, mint a minimax. Saját szinten $\alpha$, ellenfelén $\beta$ értéket adunk meg, kezdetben $-\infty$, illetve $+\infty$ értékkel. Visszalépéskor változtatunk rajta, $\alpha$-t növeljük, $\beta$-t csökkentjük. Vágás akkor történik, ha az úton vannak olyan értékek, hogy $\alpha \geq \beta$.
+További módosítások még az átlagoló (legnagyobb m és legkisebb n darab érték átlagát vesszük), illetve a váltakozó mélységű kiértékelésű minimax (minden ágon reális értéket mutasson a kiértékelő függvény nyugalmi teszttel), továbbá a negamax algoritmus (ellenfél szintjén (-1)-szeres érték, maximumot választunk minden szinten az ellentettekből).
+
+\end{document}

@@ -1,0 +1,139 @@
+\documentclass[margin=0px]{article}
+
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[a4paper, margin=0.7in]{geometry}
+\usepackage{subcaption}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+
+\onehalfspacing
+
+\renewcommand{\figurename}{ábra}
+\newenvironment{tetel}[1]{\paragraph{#1 \\}}{}
+\newcommand{\R}{\mathbb{R}}
+
+\pagestyle{fancy}
+\lhead{\it{PTI BSc Záróvizsga tételek}}
+\rhead{16. Haladó algoritmusok}
+
+\title{\textbf{{\Large ELTE IK - Programtervező Informatikus BSc} \vspace{0.2cm} \\ {\huge Záróvizsga tételek}} \vspace{0.3cm} \\ 16. Haladó algoritmusok}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{tetel}{Haladó algoritmusok}
+    Elemi gráf algoritmusok: szélességi, mélységi bejárás és alkalmazásai. Minimális feszítőfák, általános algoritmus, Kruskal és Prim algoritmusai. Legrövidebb utak egy forrásból, sor alapú Bellman-Ford, Dijkstra, DAG legrövidebb út. Legrövidebb utak minden csúcspárra: Floyd-Warshall algoritmus. Gráf tranzitív lezártja.
+\end{tetel}
+
+\section{Gráfalgoritmusok}
+\subsection{Gráf ábrázolás}
+\begin{description}
+    \item[Láncolt listás ábrázolás] \hfill \\
+        A gráf csúcsait helyezzük el egy tömbben (vagy láncolt listában). Minden elemhez rendeljünk hozzá egy láncolt listát, melyben az adott csúcs szomszédjait (az esetleges élsúlyokkal) soroljuk fel.
+    \item[Mátrixos ábrázolás] \hfill \\
+        Legyen a csúcsok elemszáma $n$. Ekkor egy $A^{n\times n}$ mátrixban jelöljük, hogy mely csúcsok vannak összekötve. Ekkor mind a sorokban, mind az oszlopokban a csúcsok szerepelnek, és az $a_{ij}$ cellában a $i$ csúcsból $j$ csúcsba vezető él súlya szerepel, ha nincs él a két csúcs között, akkor $-\infty$ (súlyozatlan esetben $1$ és $0$)
+
+        Amennyiben a gráf irányítatlan nyilván $a_{ij} = a_{ji}$
+\end{description}
+\subsection{Szélességi bejárás}
+$G$ gráf (irányított/irányítatlan) $s$ startcsúcsából a távolság sorrendjében érjük el a csúcsokat. A legrövidebb utak feszítőfáját adja meg, így csak a távolság számít, a súly nem.
+
+A nyilvántartott csúcsokat egy sor adatszerkezetben tároljuk, az aktuális csúcs gyerekeit a sor-ba tesszük. A következő csúcs pedig a sor legelső eleme lesz.
+
+A csúcsok távolságát egy $d$, szüleiket egy $\pi$ tömbbe írjuk, és $\infty$ illetve $0$ értékekkel inicializáljuk.
+
+Az algoritmus:
+\begin{enumerate}
+    \item Az $s$ startcsúcsot betesszük a sorba
+    \item A következő lépéseket addig ismételjük, míg a sor üres nem lesz
+    \item Kivesszük a sor legelső ($u$) elemét
+    \item Azokat a gyerekcsúcsokat, melyeknek a távolsága nem $\infty$ figyelmen kívül hagyjuk (ezeken már jártunk)
+    \item A többi gyerekre ($v$): beállítjuk a szülőjét ($\pi[v] = u$), és a távolságát ($d[v] = d[u]+1$). Majd berakjuk a sorba.
+\end{enumerate}
+\subsection{Minimális költségű utak keresése}
+\begin{description}
+    \item[Dijkstra algoritmus] \hfill \\
+        Egy $G$ irányított, pozitív élsúlyokkal rendelkező gráfban keres $s$ startcsúcsból minimális költségű utakat minden csúcshoz.
+
+        Az algoritmus a szélességi bejárás módosított változata. Mivel itt egy hosszabb útnak lehet kisebb a költsége, mint egy rövidebbnek, egy már megtalált csúcsot nem szabad figyelmen kívül hagyni. Ezért minden csúcs rendelkezik három állapottal (nem elért, elért, kész). A $d$ és $\pi$ tömböket a szélességi bejáráshoz hasonlóan kezeljük.
+
+        A még nem kész csúcsokat egy prioritásos sorba helyezzük, vagy minden esetben minimumkeresést alkalmazunk.
+
+        Az algoritmus:
+        \begin{enumerate}
+            \item Az $s$ startcsúcs súlyát 0-ra állítjuk eltároljuk
+            \item A következő lépéseket addig ismételjük, míg a konténerünk üres nem lesz
+            \item Kivesszük a sor legjobb ($u$) elemét, és "kész"-re állítjuk
+            \item Ha egy gyerekcsúcs ($v$) nem kész, és a jelenleg hozzávezető út súlya kisebb, mint az eddigi, akkor: a szülőjét $u$-ra állítjuk ($\pi[v] = u$), és a súlyát frissítjük ($d[v] = d[u]+d(u,v)$).
+            \item A többi csúcsot kihagyjuk.
+        \end{enumerate}
+
+    \item[Bellman-Ford algoritmus] \hfill \\
+        Egy $G$ élsúlyozott (akár negatív) irányított gráf $s$ startcsúcsából keres minden élhez minimális költségű utakat, illetve felismeri, ha negatív költségű kör van a gráfban. A $d$ és $\pi$ tömböket az előzőekhez hasonlóan kezeljük.
+
+        Az algoritmus:
+        \begin{enumerate}
+            \item A startcsúcs súlyát állítsuk be 0-ra.
+            \item $n-1$ iterációban menjünk végig az összes csúcson, és minden csúcsot ($u$) vessünk össze minden csúccsal ($v$). Ha olcsóbb utat találtunk akkor $v$-be felülírjuk a súlyát ($d[v] = d[u]+d(u,v)$), és a szülőjét ($\pi[v] = u$).
+            \item Ha az $n$-edik iterációban is történt módosítás, negatív kör van a gráfban
+        \end{enumerate}
+\end{description}
+\subsection{Minimális költség feszítőfa keresése}
+A Prim algoritmus egy irányítatlan élsúlyozott (akár negatív) gráf $s$ startcsúcsából keres minimális költségű feszítőfát. A $d$ és $\pi$ tömböket az előzőekhez hasonlóan kezeljük. Az algoritmus egy prioritásos sorba helyezi a csúcsokat.
+
+Az algoritmus:
+\begin{enumerate}
+    \item A startcsúcs súlyát állítsuk be 0-ra.
+    \item A csúcsokat behelyezzük a prioritásos sorba.
+    \item A következő lépéseket addig végezzük, míg a prioritásos sor ki nem ürül.
+    \item Kiveszünk egy csúcsot ($u$) a sorból.
+    \item Minden gyerekére ($v$), amely még a sorban és a nyilvántartott $v$-be vezető él súlya nagyobb, mint a most megtalált: A $v$ szülőjét $u$-ra változtatjuk, a nyilvántartott súlyt felülírjuk $d[v] = d(u,v)$. Majd felülírjuk a $v$ állapotát a prioritásos sorban.
+    \item Azokkal a gyerekekkel, melyek nincsenek a sorban, vagy a súlyukon nem tudunk javítani, nem változtatunk.
+\end{enumerate}
+\subsection{Mélységi bejárás}
+$G$ irányított (nem feltétlenül összefüggő) gráf mélységi bejárásával egy mélységi fát (erdőt) kapunk. Az algoritmus a következő:
+\begin{itemize}
+    \item Az élsúlyok nem játszanak szerepet
+    \item Nincs startcsúcs, a gráf minden csúcsára elindítjuk az algoritmust. (Természetesen ekkor, ha már olyan csúcsot választunk, amin már voltunk, az algoritmus nem indul el.)
+    \item A csúcsokat mohón választjuk, azaz minden csúcs gyerekei közül az elsőt választva haladunk előre, amíg csak lehet. (Olyan csúcsot találunk, amelynek nincs gyereke, vagy minden gyerekén jártunk már.)
+    \item Ha már nem lehet előre haladni visszalépünk.
+    \item Minden csúcshoz hozzárendelünk két értéket. Az egyik a mélységi sorszám, mely azt jelöli, hogy hanyadiknak értük el. A másik a befejezési szám, mely azt jelzi, hogy hanyadiknak léptünk vissza belőle.
+\end{itemize}
+A gráf éleit a mélységi bejárás közben osztályozhatjuk. (Inicializáláskor minden értéket 0-ra állítottunk)
+\begin{itemize}
+    \item Faél: A következő csúcs mélységi száma 0
+    \item Visszaél: A következő csúcs mélységi száma nagyobb, mint 0, és befejezési száma 0 (Tehát az aktuális út egy előző csúcsára kanyarodunk vissza)
+    \item Keresztél: A következő csúcs mélységi száma nagyobb, mint 0, és befejezési száma is nagyobb, mint 0, továbbá az aktuális csúcs mélységi száma nagyobb, mint a következő csúcs mélységi száma. (Ekkor egy az aktuális csúcsot megelőző csúcsból induló, már megtalált útba mutató éllel van dolgunk)
+    \item Előreél: A következő csúcs mélységi száma nagyobb, mint 0, és befejezési száma is nagyobb, mint 0, továbbá az aktuális csúcs mélységi száma kisebb, mint a következő csúcs mélységi száma. (Ekkor egy az aktuális csúcsból induló, már megtalált útba mutató éllel van dolgunk)
+\end{itemize}
+\subsection{DAG Topologikus rendezése}
+\begin{description}
+    \item[Alapfogalmak] \hfill
+        \begin{itemize}
+            \item Topologikus rendezés: \\
+                  Egy $G(V,E)$ gráf topologikus rendezése a csúcsok olyan sorrendje, melyben $\forall (u\rightarrow v) \in E$ élre $u$ előbb van a sorrendben , mint $v$
+            \item DAG - Directed Acyclic Graph: \\
+                  Irányított körmentes gráf. \\
+                  Legtöbbször munkafolyamatok irányítására illetve függőségek analizálására használják.
+
+                  Tulajdonságok:
+                  \begin{itemize}
+                      \item Ha $G$ gráfra a mélységi bejárás visszaélt talál (Azaz kört talált) $\Longrightarrow$ $G$ nem DAG
+                      \item Ha $G$ nem DAG (van benne kör) $\Longrightarrow$ Bármely mélységi bejárás talál visszaélt
+                      \item Ha $G$-nek van topologikus rendezések $\Longrightarrow$ $G$ DAG
+                      \item Minden DAG topologikusan rendezhető.
+                  \end{itemize}
+        \end{itemize}
+    \item[DAG topologikus rendezése] \hfill \\
+        Egy $G$ gráf mélységi bejárása során tegyük verembe azokat a csúcsokat, melyekből visszaléptünk. Az algoritmus után a verem tartalmát kiírva megkapjuk a gráf egy topologikus rendezését.
+\end{description}
+
+\end{document}
