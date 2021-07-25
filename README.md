@@ -1,5 +1,7 @@
 # ELTE IK - Prog.Inf. BSc Záróvizsga tételek kidolgozása
 
+A záróvizsgázó hallgató a megadott tételjegyzékből véletlenszerűen húz egy tételt. A szóbeli felelés során a bizottság azt várja el a hallgatótól, hogy az adott témában átfogó szinten ismerje a legfontosabb fogalmakat, eredményeket és az azok közötti összefüggéseket.
+
 ## Programtervező Informatikus BSc Záróvizsga tételek 2018-as tantervhez
 
 1. Függvények határértéke, folytonossága
@@ -29,11 +31,11 @@
 
 A `TODO.md`-ben találod a hiányosságokat, hibákat.
 
-Fejlesztés VS Code-al:
+Fejlesztés **VS Code**-al:
 
-1. Tölts le egy LaTeX disztribúciót. Pl: [MiKTeX](https://miktex.org/download)
-2. Klónozd a repót és nyisd meg VS Code-al, telepítsd az ajánlott bővítményeket.
-3. Fordításnál telepítsd a felugró TeX bővítményeket.
+1. Tölts le és telepíts egy [LaTeX disztribúciót](https://www.latex-project.org/get/). Pl: [MiKTeX](https://miktex.org/download)
+2. Klónozd a repót és nyisd meg VS Code-al, majd telepítsd az ajánlott bővítményeket.
+3. Fordításnál telepítsd a felugró TeX bővítményeket is.
 
 ---
 

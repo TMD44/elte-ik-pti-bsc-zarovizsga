@@ -4,6 +4,8 @@
         "torn4dom4n.latex-support",
         "tecosaur.latex-utilities",
         "nickfode.latex-formatter",
-        "coenraads.bracket-pair-colorizer-2"
+        "esbenp.prettier-vscode",
+        "coenraads.bracket-pair-colorizer-2",
+        "gruntfuggly.todo-tree"
     ]
 }

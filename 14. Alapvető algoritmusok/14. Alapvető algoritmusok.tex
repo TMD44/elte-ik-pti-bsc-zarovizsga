@@ -147,6 +147,9 @@ Tétel: $AO_R(n) = \Omega(n\log{n})$.
 TODO
 
 \section{Adattömörítések}
+\subsection{Naiv adattömörítés}
+TODO
+
 \subsection{Huffman-algoritmus}
 A Huffman-algoritmussal való tömörítés lényege, hogy a gyakrabban előforduló elemeket (karaktereket) rövidebb, míg a ritkábban előfordulókar hosszabb kódszavakkal kódoljuk.
 
@@ -252,6 +255,9 @@ Az LZW (Lempel-Ziv-Welch) tömörítésnek a lényege, hogy egy szótárat bőv�
         Ebben az esetben a dekódolásnál, egy trükköt vetünk be. A szótárba írás pillanatában még nem ismert a beírandó szó utolsó karaktere (A példában A-t találtuk, de nem volt 2-es bejegyzés). Ekkor ?-et írunk a szótárba írandó szó utolsó karakterének helyére. (Tehát A? - 2 kerül a szótárba). De mostmár tudni lehet az új bejegyzés első betűjét ( A? - 2 az új bejegyzés, ennek első betűje A). Cseréljük le a ?-et erre a betűre. (Tehát AA - 2 lesz a szótárban).
 \end{description}
 \section{Mintaillesztés}
+\subsection{Brute-force mintaillesztés}
+TODO
+
 \subsection{Knuth-Morris-Pratt algoritmus}
 A Knuth-Morris-Pratt eljárásnak a Brute-Force (hasonlítsuk össze, toljunk egyet, stb..) módszerrel szemben az az előnye, hogy egyes esetekben, ha a mintában vannak ismétlődő elemek, akkor egy tolásnál akár több karakternyit is ugorhatunk.
 
