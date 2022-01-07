@@ -1,0 +1,834 @@
+\documentclass[12pt,margin=0px]{article}
+
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage[hungarian]{babel}
+\usepackage[normalem]{ulem}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fontawesome}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{makecell}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.multipart,arrows,arrows.meta,matrix,automata,shapes.misc}
+
+\newcommand\ddfrac[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+\DeclareMathOperator\arcsinh{arcsinh}
+\DeclareMathOperator\arccosh{arccosh}
+\DeclareMathOperator\sh{sinh}
+\DeclareMathOperator\ch{cosh}
+
+\geometry{
+	a4paper,
+	total={170mm,257mm},
+	left=20mm,
+	right=20mm,
+	top=20mm,
+	bottom=20mm
+}
+
+\setlist[itemize,1]{label=$\bullet$}
+\setlist[itemize,2]{label=$\circ$}
+\setlist[itemize,3]{label=$\centerdot$}
+\setlist[itemize,4]{label=$\cdot$}
+
+\pagestyle{fancy}
+
+\newcommand\blfootnote[1]{%
+	\begingroup
+	\renewcommand\thefootnote{}\footnote{#1}%
+	\addtocounter{footnote}{-1}%
+	\endgroup
+}
+
+\renewcommand{\figurename}{ábra}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+
+\makeatletter
+\renewcommand\paragraph{%
+	\@startsection{paragraph}{4}{0mm}%
+	{-\baselineskip}%
+	{.5\baselineskip}%
+	{\normalfont\normalsize\bfseries}}
+\makeatother
+
+\useunder{\uline}{\ul}{}
+\fancyhead{}
+\cfoot{11. tétel | \thepage. oldal}
+
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\tikzset{declare function={y(\x)=\x^2;},
+	plot fill/.style={fill=white!75},
+	plot/.style={draw=black!80, thick},
+	bar/.style={fill=cyan, draw=white, thick},
+	marking/.style={fill=cyan!50!black, draw=cyan!50!black},
+	axis/.style={thick, draw=black!65, stealth-stealth}
+}
+
+\begin{document}
+    \thispagestyle{fancy}
+    \hyphenation{oddword}
+    \uchyph=0
+    {\Large\bfseries\noindent 11. Formális nyelvek} \\
+	
+    \section*{Formális nyelvtanok és a Chomsky-féle nyelvosztályok}
+	
+    {\footnotesize \noindent {\color{blue} \faLightbulbO\ $\triangleright$ } }
+
+    \subsection*{Alapfogalmak\\}
+			
+    \subsubsection*{Ábécé, szó\\}
+	
+    \begin{itemize}
+    	\item \textbf{\emph{Ábécének}} nevezzük egy tetszőleges véges szimbólumhalmazt.
+        \item Az ábécé elemeit \textbf{\emph{betűk}}nek hívjuk.
+        \item Egy $V$ ábécé elemeiből képzett \emph{véges sorozatokat} $V$ feletti \textbf{\emph{szavaknak}}.
+        \item Adott $v \in V$ \textbf{\emph{szó hossza}} a benne szereplő betűk száma. Jelölése: $l(v)$ vagy $|v|$.
+        \item A $V$ ábécé feletti $\varepsilon$ szót \textbf{\emph{üres szó}}nak nevezzük, ha $l(\varepsilon) = 0$.
+        \item $V^{0} := \{\varepsilon \}$
+        \item $V^{n} := V \times V^{n - 1},\ n \geq 1$
+        \item A $V$ ábécé feletti szavak halmazát (beleértve az üres szót is) $\boldsymbol{V^*}$-gal jelöljük.\\
+            $V^{*} := \bigcup\limits_{i = 0}^{\infty}V^{i} = V^{0} \cup V^{1} \cup \ldots$ a V \textbf{\emph{ábécé lezártja}}.
+        \item A nemüres szavak halmazát $\boldsymbol{V^+}$-szal jelöljük ($V^{+} := V^{*}\backslash\{\varepsilon\}$).\\
+            $V^{+} := \bigcup\limits_{i = 1}^{\infty}V^{i} = V^{1} \cup V^{2} \cup \ldots$ a V \textbf{\emph{ábécé pozitív lezártja}}.\\
+
+        Példa: $V:= \{a, b\}$\\
+        $V^{*} := \{\varepsilon, a, b, aa, ab, ba, bb, aaa, aab, \ldots\}$\\
+        $V^{+} := \{a, b, aa, ab, ba, bb, aaa, aab, \ldots\}$
+    \end{itemize}
+						
+    \subsubsection*{Szavak konkatenációja\\}
+
+    \noindent Legyenek \emph{u} és \emph{v} szavak egy V ábécé felett. Ekkor a két szó \textbf{\emph{konkatenációjának}} nevezzük azt a szimbólumsorozatot, amelyet a két szó szimbólumainak egymás után fűzésével kapunk. Jelölése: \emph{uv}.\\
+
+    \noindent \emph{Példa}: $V = \{a,b,c\},\ u = abb, v = cbb$. Ekkor $uv = abbcbb$.\\
+						
+    \noindent A konkatenáció asszociatív, de nem kommutatív művelet, melynek egységeleme $\varepsilon$.\\
+
+    \noindent Így $V^{*}$ a konkatenációval mint művelettel és $\varepsilon$-nal egységelemes félcsoportot alkot.
+    \begin{itemize}						
+    	\item \noindent $V^*$ zárt a konkatenációra.
+    	\begin{align*}
+            u,v \in V^* \Rightarrow uv \in V^*
+    	\end{align*}
+
+    	\item $\varepsilon$ egységelem $V^*$-gal és a konkatenációval:
+
+    	\begin{align*}
+    		u \in V^* \Rightarrow u\varepsilon \in V^* \textrm{, és }\varepsilon u \in V^*
+    	\end{align*}
+    \end{itemize}
+
+    \noindent Legyen $v \in V^{*}$
+    \begin{itemize}
+      \item $v^{0} = \varepsilon$ (bármely szó nulladik hatványa az üres szó)
+      \item $v^{n} = vv^{n-1}\quad (n \geq 1)$ (bármely szó n. hatványa a szó n-szeres konkatenációja)
+    \end{itemize}
+
+	\subsubsection*{Egyéb definíciók}
+	
+	\begin{itemize}
+		\item $u,v \in V$. Az $u$ szót a $v$ \textbf{\emph{részszavának}} nevezzük, ha $ \textbf{v} = x\textbf{u}y , \ (x,y \in V)$ teljesül.\\
+        Ha még $xy\neq\varepsilon$, akkor $u$ \textbf{\emph{valódi részszó}}.
+
+        \emph{Példa}: $v = aabbbcc \in V$ Az $u = abbbc$ valódi részszava $v$-nek.
+
+		\item $ v  = xuy \ (x,y,u,v \in V)$. Ekkor:
+		      \begin{itemize}
+		      	\item Ha $x=\varepsilon$, akkor $u$-t a $v$ szó \textbf{\emph{prefix}}ének nevezzük\\
+                \emph{Példa}: $v = aabbbcc$. Az $u = aabbb$ szó prefixe $v$-nek.
+		      	\item Ha $y=\varepsilon$, akkor $u$-t a $v$ szó \textbf{\emph{szufix}}ének nevezzük\\
+                \emph{Példa}: $v = aabbbcc$. Az $u = bbbcc$ szó szufixe $v$-nek.
+		      \end{itemize}
+		      						
+		\item Egy $u\in V$ szó tükörképe alatt a szimbólumai fordított sorrendben való felírását értjük. (Jelölése: $u^{-1}$)
+        \noindent Legyen $u = a_1 \ldots a_n,\ a_i \in V,\ 1 \leq i \leq n$, ekkor
+        \[
+            u^{-1} = a_n \ldots a_1
+        \]
+	\end{itemize}
+
+    \noindent {\footnotesize $\triangleleft$ \faLightbulbO }
+					
+	\subsection*{Formális nyelvtanok és a Chomsky-féle nyelvosztályok}
+					
+	\paragraph*{Nyelv}
+	
+	\noindent A $V^{*}$ valamely részhalmazát ($2^{V^{*}}$ valamely elemét) a $V$ ábécé feletti \textbf{\emph{nyelv}}nek nevezzük. Jelölése: L. $(L \subset V^*)$.\\
+							
+	\noindent Az üres nyelv (egy szót sem tartalmaz) jele: $\emptyset$\\
+
+	\noindent $L$ nyelv \textbf{\emph{véges nyelv}}, ha véges számú szót tartalmaz, különben \textbf{\emph{végtelen nyelv}}.\\
+
+    \noindent $L_1 = \Big\{a,b,\varepsilon \Big\}$ \emph{véges} nyelv, $L_2 = \Big\{a^ib^i\ \Big|\ 0 \leq i\Big\}$ \emph{végtelen} nyelv.\\
+
+    \noindent \emph{Megjegyzés}: A  formális  nyelv  nem  más,  mint  egy  adott  ABC  jeleiből  alkotott  tetszőleges  hosszú  szavak  halmazának  részhalmaza,  vagyis  a  formális  nyelv  egy adott ABC jeleiből alkotható, meghatározott szavak halmaza. A  formális  nyelv  állhat  véges  sok  szóból,  állhat  végtelen  sok  szóból  és  tartalmazhatja az üres szót is.\\
+
+    \noindent Nyelvek valamely összességét nyelvosztálynak, nyelvcsaládnak hívjuk. Jelölése: $\mathcal{L}_i$ .\\
+							
+	\paragraph*{Nyelvekre vonatkozó műveletek}
+
+	\begin{itemize}
+		\item $ L_1 \cup L_2 = \Big\{\ u\ |\ \ u \in L_1 \vee u \in L_2\ \Big\}$ : az $L_1$ és $L_2$ nyelv uniója
+		\item $ L_1 \cap L_2 = \Big\{\ u\ |\ \ u \in L_1 \wedge u \in L_2\ \Big\}$ : az $L_1$ és $L_2$ nyelv metszete
+		\item $ L_1 - L_2 = \Big\{\ u\ |\ \ u \in L_1 \wedge u \notin L_2\ \Big\}$ : az $L_1$ és $L_2$ nyelv különbsége
+		\item $\overline{L} = V^* - L$ : az $L \subseteq V^*$ komplementere
+		\item $L_1L_2 = \Big\{\ u_1u_2\ |\ \ u_1 \in L_1, u_2 \in L_2\ \Big\}$ : az $L_1$ és $L_2$ nyelv konkatenációja\\
+
+        Minden nyelvre fennáll: $\emptyset L = L \emptyset = \emptyset$ illetve $\{\varepsilon\}L = L\{\varepsilon\} = L$
+		\item $L^i$ : az $L$ nyelv $i$-edik hatványa, és
+        \begin{itemize}
+            \item $L^0 = \{\varepsilon\}$
+            \item $L^i = L^{i-1}L \qquad (i \geq 1)$
+        \end{itemize}
+        \item $ L^* = \bigcup\limits_{i \geq 0} L^i$ : az $L$ nyelv iteratív lezártja
+        \item $ L^+ = \bigcup\limits_{i \geq 1} L^i$ nyelvet értjük
+	\end{itemize}
+
+	\noindent Az \emph{unió}, \emph{konkatenáció} és \emph{iteráció lezárása} műveleteket \emph{reguláris műveletek}nek nevezzük.
+
+    \paragraph*{Nyelvekre vonatkozó leképezések}
+
+    \noindent Legyen $V_1,\ V_2$ ábécé.
+
+    \noindent A $h: V_1 \to V_2$ leképezést \textbf{\emph{homomorfizmus}}nak nevezzük, ha
+    \[
+        h(uv) = h(u)h(v) \qquad \forall u,v \in V_1^{*}
+    \]
+
+    \noindent Valamint minden $u = a_1a_2\ldots a_n$ szóra, ahol $a_i \in V,\ 1 \leq i \leq n$ fenáll, hogy
+    \[
+        h(u) = h(a_1)h(a_2)\ldots h(a_n)
+    \]
+
+    \noindent Legyen $h: V_1 \to V_2$ homomorfizmus.
+    \noindent A $h$ \textbf{\emph{homomorfizmus $\varepsilon$-mentes}}, ha
+    \[
+        h(u) \neq \varepsilon,\ \forall u \in V_1^{*}\ \text{szóra},\ \text{ahol}\ u \neq \varepsilon
+    \]
+
+    \noindent Egy $h$ homomorfizmust \textbf{\emph{izomorfizmus}}nak nevezzük, ha bármely $\forall u, v \in V_1^{*}$  szóra teljesül, hogy
+    \[
+        h(u) = h(v) \Rightarrow u = v
+    \]
+
+    \noindent \emph{Példa}: izomorfizmus (decimális számok bináris reprezentációja):
+    \begin{center}
+        $V_1 = \Big\{0,1,2,\ldots,9\Big\},\ V_2 = \Big\{0,1\Big\}$\\
+        $h(0) = 0000,\ h(1) = 0001,\ \ldots,\ h(9) = 1001$
+    \end{center}
+
+    \paragraph*{Nyelvek megadása}
+
+    \noindent A formális nyelvek megadási módszereitől elvárjuk, hogy a leírás véges legyen.\\
+
+    \noindent A formális nyelv megadható:
+    \begin{enumerate}
+        \item felsorolással (csak véges nyelvek esetén).
+        \item a szavakat alkotó szabály szöveges leírásával.\\
+        Például: \emph{Legyen $L_2$ a páratlan számok nyelve}.
+        \item a szavakat alkotó szabály matematikai leírásával.\\
+        Például: $V := \{a, b\}$ és legyen $L := \{u\ |\ u = a^{n}b^{n} \wedge n \in \mathbb{N}\}$
+        \item generatív grammatika segítségével.
+    \end{enumerate}
+
+	\subsection*{Grammatika}
+
+    \noindent A nyelveket megadhatjuk nyelvtanukkal is, vagyis egy szabályrendszerrel, aminek a felhasználásával a nyelv mondatai levezethetők. Egy generatív nyelvtan a jelsorozatok transzformációs szabályait leíró szabályok halmazából áll. A nyelvet alkotó jelsorozatok létrehozásához szükséges, hogy legyen egy egyedi „kezdő” szimbólum, ezután csak a szabályokat kell egymás után alkalmazni (bárhányszor, tetszés szerinti sorrendben) a kezdő szimbólum átalakítására. A nyelv azokból a jelsorozatokból áll, amelyeket az említett módon elő lehet állítani.\\
+
+    \noindent Tegyük fel például, hogy egy ábécéhez a 'a' és a 'b' szimbólumok tartoznak, a kezdő szimbólum pedig legyen az 'S' és adottak a következő szabályok:
+    \begin{itemize}
+      \item $S \to aSb$
+      \item $S \to ba$
+    \end{itemize}	
+
+    \noindent Kezdő szimbólumunk az 'S', de ezután kiválaszthatjuk, hogy melyik szabályt alkalmazzuk a jelsorozat következő elemének előállításához. \\
+
+    \noindent \emph{Példa}:
+    \begin{itemize}
+        \item Ha az 1-es szabályt választjuk, akkor annak alapján az 'S' szimbólumot a 'aSb'-al helyettesítjük, eredményül tehát a "aSb" jelsorozatot kapjuk. \\
+        \item Ha most ismételten az 1-es szabály alkalmazását választjuk, akkor helyettesítjük az 'S' szimbólumot a 'aSb'-vel, és akkor a "aaSbb" jelsorozatot kapjuk.\\
+        \item Ezt az eljárást addig ismételhetjük, amíg az ábécé szimbólumai megengedik.\\
+        \item Befejezve a példát, most válasszuk a 2-es szabályt, helyettesítsük az 'S' szimbólumot a 'ba' jelsorozattal, eredményül pedig a "aababb" jelsorozatot kapjuk, és ezzel be is fejeztük.
+    \end{itemize}
+
+    \noindent A nyelvtan által meghatározott nyelv nem lesz más, mint az összes olyan jelsorozat halmaza, amelyeket ezzel az eljárással elő tudunk állítani:
+    \[
+        \Big\{ba, abab, aababb, aaababbb, \ldots \Big\}
+    \]
+\newpage
+	\noindent A $G$ generatív nyelvtan egy $\Big<N,T,\mathcal{P},S\Big>$ négyest értünk, ahol:
+	\begin{itemize}
+		\item $N$ és $T$ diszjunkt ábécék, a nemterminális ($N$) és terminális ($T$) szimbólumok ábécéi.
+		\item $S\in N$ a kezdőszimbólum.
+		\item $\mathcal{P}$ az $(x,y)$ rendezett párok halmaza, ahol $x,y \in (N \cup T)^*$ és $x$ legalább egy nemterminális szimbólumot tartalmaz. \\
+		      A $\mathcal{P}$ halmaz elemeit átírási szabályoknak nevezzük.\\
+	\end{itemize}
+
+    \noindent \emph{Megjegyzés}: $N\ \cap\ T = \emptyset$ és az $(x,y)$ jelölés helyett az $x \rightarrow y$ jelölést alkalmazzuk.\\
+
+    \noindent \textbf{Példa}: $N = \Big\{S, B\Big\},\ T = \Big\{a, b, c\Big\}$\\
+    $\mathcal{P}$:
+    \begin{itemize}
+        \item[(1)] $S \to aBSc$
+        \item[(2)] $S \to abc$
+        \item[(3)] $Ba \to aB$
+        \item[(4)] $Bb \to bb$
+    \end{itemize}
+    És $S \in N$ nemterminális kezdőszimbólum.\\
+
+    \noindent Ekkor $L(G)$, a G grammatika által generált nyelvben generált néhány szimbólumsorozat.
+    \begin{itemize}
+        \small
+        \item[] $S \to (2)\ abc$
+        \item[] $S \to (1)\ aB\textbf{S}c \to (2)\ a\textbf{Ba}bcc \to\ (3)\ aa\textbf{Bb}cc \to (4)\ aabbcc$
+        \item[] $S \to (1)\ aB\textbf{S}c \to (1)\ aBaB\textbf{S}cc \to (2)\ a\textbf{Ba}Babccc \to\ (3)\ aaB\textbf{Ba}bccc \to (3)\ aa\textbf{Ba}Bbccc \to (3)\ aaaB\textbf{Bb}ccc \to (4)\ aaa\textbf{Bb}bccc \to (4)\ aaabbbccc$
+    \end{itemize}
+
+    \noindent (zárójelben az adott lépésre  alkallmazott szabály azonosítója, a helyettesíthető rész pedig kiemelt terminális, nem terminális).
+
+    \noindent A $G$ grammatika által leírt nyelv: $L(G) := \Big\{a^nb^nc^n\ \Big|\ n > 0\Big\}$.
+
+    \subsection*{Levezetés}
+
+    \noindent \textbf{Mondatforma}: Mondatformának nevezzük terminális és nemterminális szimbólumok véges sorozatát: $(N \cup T)^{*}$.\\
+
+	\paragraph*{Közvetlen levezetés}
+
+	$ G = \Big<N,T,\mathcal{P},S\Big>$, és $u,v \in (N\cup T)^*$. A $v$ mondatforma közvetlenül (egy lépésben) levezethető $u$ mondatformaból $G$-ben, ha
+	\[
+        \textbf{u} = w_1\textbf{x}w_2, \ v = w_1\textbf{y}w_2\textrm{, ahol} \ \boldsymbol{x \rightarrow y} \in \mathcal{P} \quad (w_1, w_2 \in (N \cup T)^*)
+	\]
+	Jelölése: $ u \xrightarrow[G]{} v$\\
+
+    \paragraph*{Közvetett levezetés}
+							
+    \noindent Azt mondjuk, hogy a $v$ mondatforma közvetetten levezethető az $u$ mondatformaból $G$-ben, ha létezik olyan $(\mathbb{N} \ni k \geq 0)$ szám és $x_0, x_1, \ldots, x_k \in (N \cup T)^{*}$ mondhatformák úgy, hogy
+	\[
+        \begin{array}{c}
+          u = x_0 \\
+          v = x_{k}
+        \end{array}
+         \quad \textrm{és} \quad x_i \xrightarrow[G]{} x_{i+1} \quad (1 \leq i \leq k-1)
+	\]
+	 						
+    \noindent Másképp: A $v$ mondatforma levezethető az $u$ mondatformából G-ben (jele: $ u \xrightarrow[G]{}^{*} v $), ha $u=v$ vagy $\exists z \in  (N\cup T)^*$ mondatforma, hogy $ u \xrightarrow[G]{}^* z $ és $ z \xrightarrow[G]{} v $
+
+	\paragraph*{Generált nyelv}
+
+    \noindent A $G$ formális nyelvtan által generált nyelv szavai a kezdőszimbólumból levezethető szavak.
+
+	\noindent $L(G)$ a $G=\Big<N,T,\mathcal{P},S\Big>$ grammatika által generált nyelv, ha:
+	\[
+		L(G) = \Big\{w \in T^{*}\ |\ S \xrightarrow[G]{}^{*} w\Big\}
+	\]
+
+    {\footnotesize \noindent {\color{blue} \faLightbulbO\ $\triangleright$ } }
+    {\footnotesize
+    \noindent \textbf{Ekvivalens nyelvtanok}: A $G_1$ és $G_2$ nyelvtanok ekvivalensek, ha $L(G_1) = L(G_2)$, azaz ugyanazt a nyelvet generálják. Jelölése: $G_1 \sim G_2$.\\
+
+    \noindent \textbf{Kvázi ekvivalens nyelvtanok}: A $G_1$ és $G_2$ nyelvtanok kvázi ekvivalensek, ha $L(G_1)\backslash\{\varepsilon\}= L(G_2)\backslash\{\varepsilon\}$, azaz legfeljebb az üres szó tartalmazásában különböznek. Jelölése: $G_1 \begin{array}{c} \sim \\ kv \end{array} G_2$
+    $\triangleleft$ \faLightbulbO}
+
+	\subsection*{Generatív nyelvtanok osztályozása}
+	
+    \noindent A generatív nyelvtanok osztályozását a szabályok alakja alapján tehetjük meg.\\
+
+	\noindent $G = \Big<N,T,\mathcal{P},S\Big>$ generatív grammatika $i$-típusú ($i=0,1,2,3$), ha $\mathcal{P}$ szabályhalmazára a következők teljesülnek:
+
+	\begin{itemize}
+		\item \emph{\textbf{Mondatszerű grammatika}} (i=0)\\ \\
+		Tetszőleges, azaz $p\textbf{A}q \rightarrow \textbf{B}$ alakú, ahol, $A \in N,\ p,\ q,\ B \in (N \cup T)^{*}$
+		\item \emph{\textbf{Környezetfüggő grammatika}} (i=1)\\ \\
+		$p\textbf{A}q \rightarrow p\textbf{B}q$ alakú, ahol, $A \in N,\ p,\ q,\ B \in (N \cup T)^{*}$\\
+        és $B \neq \varepsilon$, kivéve az $S \rightarrow \varepsilon$ szabály (ha létezik), ekkor $S$ nem fordul elő egyetlen szabály jobboldalán sem.
+        
+        Itt az A nemterminális szimbólum adott $p,\ q$ szavak esetén helyettesíthető egy $pAq$ mondatformában egy $B \in (N \cup T)^{+}$ szóval. Azaz, az $p = q = \varepsilon$ kivételével A helyettesítése B-vel, függ A környezetétől.
+        
+        Továbbá minden $\omega_1 \to \omega_2 \in \mathcal{P}$ szabályra (kivéve $S \rightarrow \varepsilon$): $l(\omega_1) \leq l(\omega_2)$
+		\item \emph{\textbf{Környezetfüggetlen grammatika}} (i=2)\\ \\
+		$A \rightarrow q$, ahol $A \in N,\ q \in (N \cup T)^{*}$.\\
+		\item \emph{\textbf{Reguláris grammatika}} (i=3)\\ \\
+		$A \rightarrow vB$ vagy $A \rightarrow v$ alakú, ahol, $A,B\in N,\ v \in T^*$.
+    \end{itemize}
+
+    \noindent A 3. típusú grammatikákat ill. nyelveket \emph{jobb lineáris}aknak is nevezzük, mivel minden szabály jobb oldalán legfeljebb egy nemterminális állhat és az is csak a jobb oldal végén.\\
+
+    \noindent A különböző típusú nyelvtanok összességét \textbf{\emph{nyelvtani osztályoknak}} hívjuk és $\mathcal{G}_{i}$ jelöljük.
+    \[
+        \mathcal{G}_{i} := \big\{\text{i. típusú nyelvtanok}\big\}
+    \]
+
+    \noindent A definíciók alapján: $\mathcal{G}_3 \subseteq \mathcal{G}_2 \subseteq \mathcal{G}_1 \subseteq \mathcal{G}_0$.\\
+
+    \noindent A nyelvtani osztályozást felhasználva a nyelveket is osztályozhatjuk:
+    \[
+        \mathcal{L}_{i} := \Big\{L\ \big|\ \text{L nyelv, és van olyan}\ G \in \mathcal{G}_{i},\ \text{amelyre}\ L(G) = L \Big\}
+    \]
+
+    \noindent Az előző nyelv hierarchia alapján $ \mathcal{L}_3 \subseteq \mathcal{L}_2 \subseteq \mathcal{L}_1 \subseteq \mathcal{L}_0 $ az ún. \textbf{\emph{Chomsky-féle hierarchia}}.\\
+
+    \noindent Igaz a hierarchia erősebb változata is: $\mathcal{L}_3 \subset \mathcal{L}_2 \subset \mathcal{L}_1 \subset \mathcal{L}_0$.\\
+
+    \noindent \textbf{Tétel}. Nem minden nyelv írható le nyelvtannal.\\
+
+    {\footnotesize \noindent {\color{blue} \faLightbulbO\ $\triangleright$ } }
+    {\footnotesize
+    \noindent Miért érdekes a Chomsky-féle osztályozás?\\
+
+     \noindent Az algoritmusok - mint ismeretes - problématípusok (problémaosztályok) megoldására szolgáló lépéssorozatok. A generatív grammatikákkal kapcsolatban több, számítógéppel (esetleg) megoldható probléma merül fel, melyekre algoritmusok készíthetők. Nagyon fontos annak eldöntése, hogy ha egy konkrét generatív grammatika egy konkrét problémájának  megoldására kifejlesztett algoritmus alkalmazható-e más grammatika ugyanazon problémájára, illetve mennyi módosítással alakítható át.\\
+
+     \noindent Amennyiben a két grammatika ugyanazon Chomsky-osztályba tartozik, úgy egy jól megfogalmazott algoritmus váza a paraméterektől eltekintve elvileg alkalmazható lesz.\\
+
+     \noindent Másik  fontos  indok,  ami  miatt  fontos  ismerni  egy  grammatika  Chomsky-osztályát,  hogy  igazolható  bizonyos  problémakörökről,  hogy  nem  készíthető  hozzá  általános  érvényű megoldó algoritmus.
+    $\triangleleft$ \faLightbulbO}\\
+
+    \noindent Az $\mathcal{L}_i \ (i=0,1,2,3)$ \emph{nyelvosztályok mindegyike zárt a nyelveken végezhető műveletekre nézve}. Tehát valahányszor $\mathcal{L}$-beli nyelveken végezzük el a műveletet, mindannyiszor $\mathcal{L}$-beli nyelvet kapunk eredményül. \\
+
+    \noindent \textbf{Tétel}. (\emph{Kis Bar-Hillel lemma}): Tetszőleges $L \in \mathcal{L}_3$ nyelvhez $\exists n(L) > 0 \in \mathbb{Z}$, hogy $\forall u \in L,\ l(u) \geq n: u = xyz$ a következő tulajdonságokkal bír:
+    \begin{itemize}
+        \item $y \neq \varepsilon$
+        \item $l(xy) \geq n$
+        \item $\forall i = 0,1,\ldots: xy^{i}z \in L$
+    \end{itemize}
+    
+    \noindent Azaz L nyelv minden szavának elég hosszú részszavában létezik elég rövid, nem üres, beiteralható részszó. pl. K-B HL $\Rightarrow HE \not \in \mathcal{L}_3$. HE: A $\left\{(,)\right\}$ ábécé feletti helyes zárójelezések halmaza.\\
+
+    \noindent \textbf{Tétel}. (\emph{Zártság}): $\mathcal{L}_3$ zárt az unió, konkatenáció, lezárás, komplementerképzés, metszet, különbség és szimmetrikus differencia műveletekre nézve.\\
+
+    {\footnotesize \noindent {\color{blue} \faLightbulbO\ $\triangleright$ } }
+    {\footnotesize
+    \noindent \textbf{Zsákutca}: Olyan nyelvtani jel, melyből az adott 2. típusú nyelvtanban nem vezethető le terminális szó.\\
+
+    \noindent \textbf{Nem elérhető nyelvtani jel}: Olyan nyelvtani jel, mely az adott 2. típusú nyelvtanban semmilyen, a kezdőszimbólumból történő levezetésben nem szerepel.\\
+
+    \noindent \textbf{Láncszabály}: Egy $G$ grammatika egy $x \to y \in \mathcal{P}$ szabálya láncszabály, ha $x,\ y \in N$, azaz nemterminálisok.\\
+
+    \noindent \textbf{Láncszabálymentes nyelvtan}: Egy nyelvtan láncszabálymentes, ha nincs láncszabálya.\\
+
+    \noindent \textbf{Epszilon-szabály}: Egy $G$ grammatika egy $x \to y \in \mathcal{P}$ epszilon-szabály, ha $y = \varepsilon$.\\
+
+    \noindent \textbf{Korlátozott epszilon-szabály (KeS)}: Egy $G = \Big<N,T,\mathcal{P},S\Big>$ nyelvtanra teljesül a korlátozott epszilonszabály, ha nincsenek epszilonszabályai az $S \to \varepsilon$ szabály esetleges kivétel, de ez esetben minden $x \to y \in \mathcal{P}$ szabályra $y \in (N \cup T \backslash \{S\})^{*}$ (azaz semelyik szabály jobboldala sem tartalmazza a kezdőszimbólumot).
+    $\triangleleft$ \faLightbulbO}\\    
+
+    \noindent \textbf{Epszilonmentes nyelvtan}: Egy nyelvtan epszilonmentes, ha teljesül rá az epszilon-szabály.
+						
+	\section*{Automaták}
+
+    Formális nyelvek megadása nemcsak generatív, hanem felismerő eszközökkel is lehetséges, azaz olyan számítási eszközök segítségével, amelyek szavak feldolgozására és azonosítására alkalmasak.
+	Ilyen eszköz például az automata, amely egy szó, mint input hatására kétféleképpen viselkedhet: vagy \emph{elfogadja}, vagy \emph{elutasítja}.
+	
+    \subsection*{Véges automaták}
+	
+	\noindent \textbf{Definíció}. A véges automata egy rendezett ötös,
+		\[
+            \mathcal{A}=\Big<Q,T,\delta,q_0, F\Big>
+        \]
+		\begin{itemize}
+			\item Q - állapotok véges, nemüres halmaza
+			\item T - bementi szimbólumok ábécéje (véges)
+			\item $\delta : Q \times T \rightarrow Q$ - állapot-átmeneti függvény
+			\item $q_0 \in Q$ - kezdőállapot
+			\item $F \subseteq Q$ - végállapotok halmaza
+		\end{itemize}
+							
+	\noindent \emph{Működése}:\\
+
+    \noindent A véges automata diszkrét időintervallumokban végrehajtott lépések sorozata által működik. Minden egyes lépés során az automata elolvassa a következő input szimbólumot és átmegy egy olyan állapotba, amelyet az állapotátmeneti függvény meghatároz (az aktuális állapot és input szimbólum alapján).\\
+							
+    \noindent Kezdetben az $A$ véges automata a $q_0$ kezdőállapotban van és az olvasófej az input szalagon levő $u \in T^*$ szó első betűjét dolgozza fel. Ezután a véges automata lépések sorozatát végrehajtva elolvassa az input $u$ szót; betűről betűre haladva olvas és új állapotba kerül.\\
+							
+    \noindent Miután az $u$ input szó utolsó betűjét is elolvasta a véges automata, vagy $q \in F,$ azaz elfogadó állapotba kerül, és akkor az $u$ szót az automata elfogadja, vagy az új állapot nem lesz eleme $F$-nek, és ekkor az automata a szót nem fogadja el.\\
+
+    \noindent \textbf{Automata által felismert nyelv}: Az automata által felismert nyelv azon szavak halmaza, amelyekre a kezdő állapotból valamelyik végállapotba jut, azaz
+    \[
+        L(\mathcal{A}) = \Big\{u \in T^{*}\ \Big|\ \delta(q_0,u) \in F\Big\}.
+    \]
+
+    \paragraph*{Az automata megadási módszerei}
+
+    \begin{itemize}
+        \item \emph{Átmeneti gráf}: Olyan irányított gráf, melynek pontja az állapotok, és $A$ állapotból $t$-vel címkézett él fut $B$ állapotba, ha $\delta(A, t) = B$.
+        \item \emph{Táblázat}: egyik tengelyén az állapotok, a másikon a terminálisok találhatók\\
+        - lényegében az átmeneti gráf mátrixreprezentációja.
+        \item \emph{Képlet}: a $\delta$ függvény megadása valamilyen zárt számítási képlettel, formulával.
+    \end{itemize}
+
+	\paragraph*{VDA - Véges determinisztikus automata}
+
+    \noindent A $\delta$ függvény egyértékű, ezért minden egyes $(q, a)$ párra, ahol $(q, a) \in Q \times T$ egyetlen olyan $s$ állapot létezik, amelyre $\delta(q, a) = s$ teljesül. Ezért ezt a véges automatát determinisztikusnak nevezzük.\\
+
+    \paragraph*{VNDA - Véges nemdeterminisztikus automata}
+
+    \noindent Ha többértékű állapot-átmeneti függvényt is megengedünk, azaz $\delta : Q \times T \rightarrow 2^Q$, akkor nemdeterminisztikus véges automatáról beszélünk. (Ebben az esetben aktuális állapotnak egy állapothalmaz valamely elemét, mintsem egyetlen állapotot tekinthetünk.)\\
+							
+	\noindent Ez azt jelenti, hogy a kezdeti állapot helyettesíthető egy $Q_0 \subseteq Q$ kezdőállapot halmazzal.\\
+	\noindent (És az is előfordulhat, hogy egy a input szimbólum esetén $\delta(q, a)$ üres az aktuális állapotok mindegyikére.)
+	
+    \paragraph*{Tulajdonságok}
+
+    Az állapot-átmeneteket
+	\[
+        qa \rightarrow p
+    \]
+    alakú szabályok formájában is írhatjuk $p \in \delta(q, a) $ esetén. Jelöljük $M_\delta$-val az $A = \Big<Q, T, \delta,Q_0, F\Big>$ nemdeterminisztikus véges automata $\delta$ állapot-átmenet függvénye által az előbbi módon származó szabályok halmazát.\\
+							
+	\noindent Ha minden egyes $(q, a)$ párra egyetlen $qa \rightarrow p$ szabály van $M_\delta$-ban, akkor a véges automata determinisztikus, egyébként nemdeterminisztikus.
+							
+	\begin{itemize}
+        \item Közvetlen redukció: \\
+            Legyen $A = (Q, T, \delta, q_0, F)$ egy véges automata és legyenek $u, v \in QT^*$ szavak. Azt mondjuk, hogy az $A$ automata az $u$ szót a $v$ szóra redukálja egy lépésben/közvetlenül. Ha van olyan $qa \rightarrow p$ szabály $M_\delta$-ban, és van olyan $w \in T^*$ szó, amelyre $u = qaw$ és $v = pw$ teljesül.
+			      						
+        \item Redukció:\\
+            Az $A = (Q, T, \delta, q_0, F)$ véges automata az $u \in QT^*$ szót a $v \in QT^*$ szóra redukálja $(u \Longrightarrow_A^* v)$, ha $u = v$, vagy $ \exists z \in QT^*$, amelyre $u \Longrightarrow_A^* z$ és $z \Longrightarrow_A v$ teljesül.
+    \end{itemize}
+
+    \noindent Az automata által elfogadott nyelv:\\
+    \noindent Az $A = \Big<Q, T, \delta, q_0, F\Big>$ véges automata által elfogadott/felismert nyelv alatt az
+    \[
+        L(A) = \Big\{u \in T^* | \ q_0u \Longrightarrow_A^* p, \quad q_0 \in Q_0  \textrm{ és }  p \in F\Big\}
+    \]
+    szavak halmazát értjük.  (Az üres szó, akkor és csak akkor van benne az automata által elfogadott $L(A)$ nyelvben, ha $Q_0 \cap F \neq \emptyset$).\\
+			      						
+    \noindent \textbf{Tétel}. Minden $A$ nemdeterminisztikus véges automatához meg tudunk adni egy 3-típusú $G$ grammatikát úgy, hogy $L(G) = L(A)$ teljesül.\\
+%        \ \\
+%        \textbf{3. típusú nyelvtan konstrukciója automatából}: A konstrukció alapötlete a következő:
+%        \begin{enumerate}
+%            \item hozzuk normálformára a nyelvtant,
+%            \item a nyelvtani jeleket feleltessük meg az automata állapotainak,
+%            \item $q_0$-t rendeljük az S startszimbólumhoz,
+%            \item $q \to tq' \in \mathcal{P} \Leftrightarrow \delta(q, t) = q'$,
+%            \item $q \to \varepsilon \in \mathcal{P} \Leftrightarrow q \in F.$
+%        \end{enumerate}
+			      						
+    \noindent \textbf{Tétel}. Minden 3-típusú G grammatikához meg tudunk adni egy $A$ véges automatát úgy, hogy $L(A) = L(G)$ teljesül.\\
+			      						
+    \noindent Ezek után fenáll a kérdés: Létezik-e olyan reguláris nyelv, amely VNDA-val felismerhető, de nem ismerhető fel VDA-val? \\
+    \noindent Válasz: Nincs.
+			      						
+    \noindent \textbf{Tétel}. Minden $A = (Q, T, \delta,Q_0, F)$ VNDA-hoz  meg tudunk konstruálni egy $A' = (Q', T, \delta', q_0', F')$ VDA-t úgy, hogy $L(A) = L(A')$ teljesül.\\
+
+    \noindent \textbf{Automata konstrukciója 3. típusú nyelvből.} A fentihez hasonló, fordított konstrukcióval készíthető 3. típusú nyelvtan alapján automata, ez azonban nem mindig lesz determinisztikus - ha nemdeterminisztikus állapotátmeneti függvényt kapunk, az automatát még determinisztikussá kell tennünk.\\
+
+	\subsection*{Veremautomaták}
+
+	\paragraph*{Definíció}
+
+    Az egy veremmel rendelkező (1-verem) automatát a következő hetessel azonosítjuk
+    \[
+        A = \Big<Q, T, \Sigma, \delta, q_0, \sigma_0, F\Big>
+    \]
+    ahol
+    \begin{itemize}
+        \item Q - az állapotok véges halmaza
+        \item T - input ábécé
+        \item $\Sigma$ - veremábécé
+        \item $\delta : Q \times (T \times \cup \{\varepsilon\}) \times \Sigma) \rightarrow 2^{Q \times \Sigma^{*}},\ |\delta(q,t,\sigma)| < \infty$ - átmeneti függvény
+        \item $q_0 \in Q $ - kezdőállapot
+        \item $\sigma_{0} \in \Sigma $ - a verem kezdőszimbóluma
+        \item $F \subseteq Q$ - az elfogadó állapotok halmaza
+    \end{itemize}
+
+    {\footnotesize \noindent {\color{blue} \faLightbulbO\ $\triangleright$ } }
+    {\footnotesize
+    \noindent A veremautomata egy ütemben kiolvassa a központi egység állapotát, az input szó aktuális szimbólumát és a verem tetőelemét, ennek függvényében új állapotba kerül, a verem tetőelemét felülírja egy vagy több jellel (azaz egy szóval), az input szó következő betűjére áll az olvasófej (kivéve $\varepsilon$-mozgás) és a tetőmutató az új tetőelemre áll.\\
+
+    \noindent A veremautomata konfigurációja alatt egy $uq$ alakú szót értünk, ahol $u \in Z^*$ a verem aktuális tartalma és $q \in Q$ az aktuális állapot. \\
+    \noindent A kezdeti konfiguráció $\sigma_0q_0$.\\
+							
+    \noindent Működés: \\
+
+    \noindent Tegyük fel, hogy az $A$ veremautomata olvasófeje az $a$ inputszimbólumon áll, a veremautomata $q$ állapotban van, valamint a verem tetején levő szimbólum $z$. Legyen $ \delta(z, q, a) = {(u_1, r_1), . . . , (u_n, r_n)}$, ahol $u_i \in Z^*$ és $r_i \in Q, 1 \leq i \leq n$. Ekkor $A$ következő állapota valamely $r_i$ lesz és egyidejűleg $z$-t helyettesíti az $u_i$ szóval, továbbá az olvasófej egy cellával jobbra lép az input szalagon.\\
+    Ha $\delta(z, q, \varepsilon)$ nem üres, akkor ún. $\varepsilon$-átmenet hajtható végre.
+							
+    \noindent Ha az input szalag a $w \in T^*$ szót tartalmazza és a $z_0q_0$ kezdeti konfigurációból kiindulva a lépések sorozatát végrehajtva az $A$ veremautomata egy $up$ konfigurációba ér, ahol $p$ elfogadó állapot, akkor azt mondjuk, hogy $A$ elfogadta a $w$ szó.
+    $\triangleleft$ \faLightbulbO}\\
+
+    \noindent A veremautomata elfogadja a szót, ha üres a verem, és elfogadó állapotban van.\\
+							
+	\paragraph*{Tulajdonságok}
+
+    \begin{itemize}
+        \item Közvetlen redukció: \\
+            $\alpha, \beta \in Z^*QT^*$\\
+            Az $A$ veremautomata az $\alpha $ szót a $\beta$ szóra redukálja egy lépésben ($\alpha \Longrightarrow_A \beta$), ha:
+            \[
+                \exists z \in Z, \ p,q \in Q, \ a \in T \cup \{\varepsilon\}, \ r,u \in Z^* \textrm{ és } w\in T^*
+            \]
+            hogy:
+            \[
+                (u,p) \in \delta(z,q,a) \textrm{ és } \alpha = rzqaw \textrm{ és } \beta = rupw
+            \]
+		\item Redukció: \\
+            Az A veremautomata az $\alpha$ szót a $\beta$ szóra redukálja ($\alpha \Longrightarrow_A^* \beta$), ha vagy $\alpha = \beta$, vagy
+            $ \exists \gamma_1,...,\gamma_n \in Z^*QT^*$ szavakból álló véges sorozat, hogy $\alpha = \gamma_1, \ \beta = \gamma_n, \quad \textrm{ és } \quad \\ {\gamma_i \Longrightarrow_A \gamma_{i+1} \quad (i=1,...,n-1)}$
+        \item A veremautomata által elfogadott nyelv: \\
+            Az A veremautomata által (elfogadó állapottal) elfogadott nyelv:
+            \[
+                L(A) = \Big\{ w \in T^* | \ z_0q_0w \Longrightarrow_A^* up, \textrm{ ahol } u \in Z^*, p \in F \Big\}
+            \]
+		\item Determinizmus: \\
+            A $\delta$ leképezést szabályok formájában is megadhatjuk. Az így nyert szabályhalmazt $M_\delta$-val jelöljük. Tehát
+            \begin{enumerate}
+                \item $zqa \rightarrow up \in M_\delta$ ha $(u, p) \in \delta(z, q, a)$
+                \item $zq \rightarrow up \in M_\delta$ ha $(u, p) \in \delta(z, q, \varepsilon)$
+            \end{enumerate}
+			      								
+            Az $A = (Z,Q, T,\delta, z_0, q_0, F)$ veremautomatát determinisztikusnak mondjuk, ha minden $(z, q) \in Z \times Q$ pár esetén:
+            \begin{enumerate}								
+                \item $\forall a \in T:  |\delta(z, q, a)| = 1$ és $\delta(z, q, \varepsilon) = \emptyset$
+			      	      									
+                vagy
+                \item $|(z, q, \varepsilon)| = 1 $ és $\forall a \in T: \delta(z, q, a) = \emptyset$
+            \end{enumerate}
+        \item Üres veremmel elfogadott nyelv: \\
+                Az $N(A)$ nyelvet az $A$ veremautomata üres veremmel fogadja el, ha
+                \[
+                    N(A) = \Big\{w \in T^* | \ z_0q_0w \Longrightarrow_A^* p, \textrm{ ahol } p \in Q \Big\}
+                \]
+		\end{itemize}
+
+    \noindent \textbf{Tétel}. Tétel. Az 1-verem automatákkal felismerhető nyelvek osztálya megegyezik a 2. típusú grammatikák által generált nyelvek osztályával, azaz $\mathcal{L}_{V} = \mathcal{L}_{2}$.
+
+	\section*{Reguláris nyelvek tulajdonságai és alkalmazásai}
+
+    \noindent \textbf{Reguláris nyelv}: Reguláris nyelveknek nevezzük az alábbi három tulajdonsággal definiált ($\mathcal{L}_{REG}$) nyelvosztály elemeit:
+    \begin{itemize}
+        \item[(1)] $\mathcal{L}_{REG}$ tartalmazza az elemi nyelveket: $\emptyset, \{\varepsilon\},\{a\}\qquad (a \in U)$ (U: univerzális ábécé)
+        \item[(2)] $\mathcal{L}_{REG}$ zárt az \emph{unió}, \emph{konkatenáció} és a \emph{lezárás} műveletekre.
+        \item $\mathcal{L}_{REG}$ a legszűkebb olyan nyelvosztály, mely az $(1),\ (2)$ feltételeknek megfelel.\\
+    \end{itemize}
+
+    {\footnotesize \noindent {\color{blue} \faLightbulbO\ $\triangleright$ } }
+    {\footnotesize\\
+    \noindent \textbf{Reguláris kifejezés}: A reguláris kifejezések a reguláris nyelvek egyszerűsített leírását jelentik, ahol:
+    \begin{itemize}
+        \item az elemi reguláris kifejezések: $\emptyset, \varepsilon, a \qquad (a \in U)$
+        \item ha $R_1$ és $R_2$ reguláris kifejezések, akkor $(R_1 \cup R_2), (R_1R_2),R_1^{*}$ is $V$ ábécé feletti reguláris kifejezések
+        \item a reguláris kifejezések halmaza a legszűkebb, melyre az előbbi két pont teljesül\\
+    \end{itemize}
+
+    \noindent \textbf{V ábécé feletti reguláris kifejezések} (rekurzív definíció)
+    \begin{itemize}
+        \item az elemi reguláris kifejezések: $\emptyset, \varepsilon, a \qquad (a \in V)$
+        \item ha $R_1$ és $R_2$ $V$ ábécé feletti reguláris kifejezések, akkor $(R_1 \cup R_2), (R_1R_2),R_1^{*}$ is reguláris kifejezések
+        \item a $V$ ábécé feletti reguláris kifejezések halmaza a legszűkebb, melyre az előbbi két pont teljesül\\
+    \end{itemize}
+
+    \noindent \textbf{V ábécé feletti általánosított reguláris kifejezések} (rekurzív definíció)
+    \begin{itemize}
+        \item az elemi reguláris kifejezések: $\emptyset, \varepsilon, a \qquad (a \in V)$
+        \item ha $R_1$ és $R_2$ $V$ ábécé feletti általánosított kifejezések, akkor $(R_1 \cup R_2), (R_1R_2), R_1^{*}, (R_1 \cap R_2), \overline{R_1}$ is $V$ ábécé feletti általánosított reguláris kifejezések
+        \item a $V$ ábécé feletti általánosított reguláris kifejezések halmaza a legszűkebb, melyre az előbbi két pont teljesül\\
+    \end{itemize}
+
+    \noindent \textbf{Reguláris kifejezések szemantikája} (rekurzív definíció)
+    \begin{itemize}
+        \item az $\emptyset, \varepsilon, a$ reguláris kifejezések rendre az $\emptyset, \{\varepsilon\}, \{a\}$ nyelveket reprezentálják
+        \item ha $R_1$ az $L_1$ és $R_2$ az $L_2$ nyelvet reprezentálja, akkor $(R_1 \cup R_2),\ (R_1R_2),\ R_1^{*}$ rendre az $L_1 \cup L_2,\ L_1L_2,\ L_1^{*}$ nyelveket reprezentálja
+    \end{itemize}
+
+    \noindent \textbf{Reguláris kifejezések általánosított szemantikája} (rekurzív definíció)
+    \begin{itemize}
+        \item az $\emptyset, \varepsilon, a$ reguláris kifejezések rendre az $\emptyset, \{\varepsilon\}, \{a\}$ nyelveket reprezentálják
+        \item ha $R_1$ az $L_1$ és $R_2$ az $L_2$ nyelvet reprezentálja, akkor $(R_1 \cup R_2),\ (R_1R_2),\ R_1^{*}, \overline{R_1}$ rendre az $L_1 \cup L_2,\ L_1L_2,\ L_1^{*}, \overline{L_1}$ nyelveket reprezentálja
+    \end{itemize}
+
+	\paragraph*{Axiómák}
+
+    \noindent $P,Q,R$ reguláris kifejezések. Ekkor fennállnak a következő tulajdonságok:
+    \begin{itemize}
+        \item Asszociativitás:
+            \[
+                P+(Q+R) = (P+Q)+R
+            \]
+            \[
+                P\cdot(Q\cdot R) = (P\cdot Q)\cdot R
+            \]
+			\item Kommutativitás:
+            \[
+                P+Q = Q+P
+            \]
+			\item Disztributivitás:
+            \[
+                P\cdot (Q+R) = P\cdot Q + P\cdot R
+            \]
+			\[
+                (P+Q)\cdot R = P\cdot R + Q\cdot R
+            \]
+			\item Egységelem:
+            \[
+                \varepsilon\cdot P = P\cdot\varepsilon = P
+            \]
+            \[
+                P^* = \varepsilon + P \cdot P^*
+            \]
+			\[
+                P^* = (\varepsilon+P)^*
+            \]
+        \end{itemize}
+							
+    \noindent A fenti axiómák azonban még önmagukban nem elegendőek az összes reguláris kifejezés előállítására (helyettesítés segítségével). Szükség van még az alábbi inferencia szabályra:
+    \[
+        P=R+P\cdot Q \quad \land \quad \varepsilon \notin Q \quad \Longrightarrow \quad P = R\cdot Q^*
+    \]
+							
+    \noindent Vegyük még hozzá az $\emptyset$ szimbólumot a reguláris kifejezések halmazához, amely az üres nyelvet jelöli. (Ebben az esetben nincs szükségünk az $\varepsilon$ szimbólumra, mivel $\emptyset^* = \{\varepsilon\}$). Így, a definícióban helyettesíthetjük az $\varepsilon$ szimbólumot az $\emptyset$ szimbólummal. Ekkor helyettesítjük $\varepsilon$-t a megelőző axióma rendszerben $(\emptyset)^*$-gal és még egy további axiómát tekintünk:
+    \[
+        \emptyset\cdot P = P\cdot\emptyset = \emptyset
+    \]
+
+    \noindent A fenti szabályok elégségesek ahhoz, hogy levezessünk minden érvényes egyenlőséget reguláris kifejezések között.
+	
+    \paragraph*{Reguláris kifejezések és reguláris nyelvek}
+
+    \noindent Minden reguláris kifejezés egy reguláris (3-típusú) nyelvet jelöl, és megfordítva, minden reguláris nyelvhez megadható egy, ezen nyelvet jelölő reguláris kifejezés.\\
+    $\triangleleft$ \faLightbulbO}\\
+
+    \noindent \textbf{Tétel}. (\emph{Kleene-tétel}): $\mathcal{L}_{REG} = \mathcal{L}_{3}$, azaz a reguláris nyelvek osztálya megegyezik a véges determinisztikus automatával előállítható nyelvek osztályával.\\
+
+    \noindent \textbf{Tétel}. Az $\mathcal{L}_3$ nyelvosztály zárt a komplementer, a metszet, a különbség és aszimmetrikus differencia műveletekre, a zártsági tétel miatt pedig zárt az unió, konkatenáció és a lezárás műveletekre is.\\
+
+    \subsection*{Reguláris nyelvek felhasználási területei\\}
+
+    Bár a reguláris nyelvtanok az összes nyelvek viszonylag szűk osztályát jelölik ki, könnyű kezelhetőségük miatt gyakorlati alkalmazásuk rendszeres.\\
+
+    \noindent \textbf{\emph{Lexikális elemző}} (scanner): A fordítóprogramok legalsó szintjén, a lexikális elemek felderítésében nagy szerepet játszanak a 3. típusú nyelvtanok: általában reguláris kifejezésekkel azonosítják a nyelv lexikális elemeit.\\
+
+    \noindent \textbf{\emph{Mintaillesztés}}: Mintaillesztési feladatokban (pl. adatok között/szövegben történő keresés) reguláris kifejezéssel írható le az illesztendő minta. Ebből általában véges determinisztikus automatát (például Knuth-Morris-Pratt automatát) generálnak.\\
+	
+    {\footnotesize \noindent {\color{blue} \faLightbulbO\ $\triangleright$ } }
+    {\footnotesize
+	\subsection*{Lineáris grammatikák és nyelvek}
+	
+    \paragraph*{Definíció}
+
+    \noindent Egy $\Big<N,T,\mathcal{P},S\Big>$ környezetfüggetlen grammatikát lineárisnak nevezünk, ha minden szabálya:
+    \begin{enumerate}
+        \item $A\rightarrow u, \quad A \in N, u \in T^*$
+        \item $A\rightarrow u_1Bu_2, \quad A,B\in N, u_1,u_2 \in T^*$
+    \end{enumerate}
+
+    \noindent Továbbá $G$-t bal-lineárisnak, illetve jobb-lineárisnak mondjuk, ha $u_1 = \varepsilon$, illetve $u_2 = \varepsilon$ minden 2. alakú szabályra.
+								
+    \noindent Egy $L$ nyelvet lineárisnak, bal-lineárisnak, illetve jobb-lineárisnak mondunk, ha van olyan $G$ lineáris, bal-lineáris, illetve jobb-lineáris grammatika, amelyre $L = L(G)$ teljesül.
+
+    \paragraph*{Lineáris és reguláris grammatikák, nyelvek}
+
+    \noindent A jobb-lineáris grammatikák azonosak a reguláris grammatikákkal (3-típusúak).
+								
+    \noindent \textbf{Tétel}. Minden bal-lineáris grammatika reguláris (3-típusú) nyelvet generál.\\
+    $\triangleleft$ \faLightbulbO}\\
+	
+	\section*{Környezetfüggetlen nyelvek tulajdonságai és elemzésük}
+
+	\subsection*{Környezetfüggetlen grammatikák normálformái}
+
+	\noindent Környezetfüggetlen grammatikák normálformái olyan grammatikai transzformációval előállított  grammatikák, melyek:
+	\begin{itemize}
+		\item bizonyos szintaktikai feltételeknek/tulajdonságoknak tesznek eleget
+		\item (általában) valamilyen szempontból egyszerűbbek, mint az eredeti grammatikák
+		\item ugyanazt a nyelvet generálják (így ugyanazon típusba tartoznak)
+	\end{itemize}
+	
+    \noindent \textbf{Tétel}. Minden $\Big<N,T,\mathcal{P},S\Big>$ környezetfüggetlen grammatikához meg tudunk konstruálni egy vele ekvivalens $G' = \Big<N',T,\mathcal{P}',S'\Big>$ környezetfüggetlen grammatikát úgy, hogy: $G'$ minden szabályának jobboldala nemüres szó [kivéve azt az esetet, mikor $\varepsilon \in L(G)$, ekkor $S' \rightarrow \varepsilon$ az egyetlen szabály, melynek jobboldala az üres szó és ekkor $S'$ nem fordul elő $G'$ egyetlen szabályának jobboldalán sem.]
+	
+    \paragraph*{$\varepsilon$-mentes grammatika}
+
+    \noindent A $G$ grammatika $\varepsilon$-mentes, ha egyetlen szabályának jobboldala sem az üres szó.\\
+							
+    \noindent \textbf{Tétel}. Minden környezetfüggetlen $G$ grammatikához meg tudunk konstruálni egy $G'$ $\varepsilon$-mentes környezetfüggetlen grammatikát, amelyre $L(G') = L(G) - \{\varepsilon\}$ teljesül.\\
+
+    \paragraph*{Chomsky normálforma}
+
+	\noindent A $G = \Big<N,T,\mathcal{P},S\Big>$ környezetfüggetlen grammatikát Chomsky-normálformájúnak mondjuk, ha minden egyes szabálya:
+	\begin{itemize}
+        \item $X \rightarrow a$, ahol $X \in N, a \in T$
+        \item $X \rightarrow YZ$, ahol $X,Y,Z \in N$
+    \end{itemize}
+	
+    \noindent \textbf{Tétel}. Minden $\varepsilon$-mentes $\Big<N,T,\mathcal{P},S\Big>$ környezetfüggetlen grammatikához meg tudunk konstruálni egy vele ekvivalens $G' = \Big<N',T,\mathcal{P}',S'\Big>$ Chomsky-normálformájú környezetfüggetlen grammatikát.\\
+							
+    \noindent \textbf{Tétel}. (az előző következménye): Minden $G$ környezetfüggetlen grammatika esetében eldönthető, hogy egy $u$ szó benne van-e $G$ grammatika által generált nyelvben.\\
+
+	\paragraph*{Redukált grammatika}
+
+	\begin{itemize}
+        \item A környezetfüggetlen grammatika egy nemterminálisát \textbf{\emph{inaktívnak/nem aktívnak}} nevezzük, ha nem vezethető le belőle terminális szó.
+        \item A környezetfüggetlen grammatika egy nemterminálisát \textbf{\emph{nem elérhetőnek}} nevezzük, ha nem fordul elő egyetlen olyan szóban sem, amely a kezdőszimbólumból levezethető.
+%        \item Egy nemterminálist nem hasznosnak mondunk, ha vagy inaktív, és/vagy nem elérhető.
+        \item Az, hogy egy $A$ nemterminális elérhető-e vagy aktív-e, az eldönthető.
+        \item \emph{Egy környezetfüggetlen grammatika redukált}, ha minden nemterminálisa \emph{aktív} és \emph{elérhető}.
+    \end{itemize}
+	
+    \paragraph*{Elemzés}
+
+    \noindent A környezetfüggetlen nyelvtanok segítségével szintaxisfát építhetünk. Sikeres szintaxisfafelépítés esetén az elemzés sikerült, különben szintaktikai hibát találunk. Módszerek: legbal levezetés, legjobb levezetés.\\
+
+    \noindent \textbf{Tétel}. Minden környezetfüggetlen grammatikához meg tudunk konstruálni egy vele ekvivalens redukált környezetfüggetlen grammatikát.
+	
+	\subsection*{Levezetési fa}
+
+    \noindent A környezetfüggetlen grammatikák levezetéseit fákkal is jellemezhetjük. A levezetési fa egy szó előállításának lehetőségeiről ad információkat. A levezetési fa egy irányított gráf, amely speciális tulajdonságoknak tesz eleget:
+	\begin{itemize}
+		\item A gyökér cimkéje: $S$
+		\item A többi csúcs cimkéje ($N\cup T$) valamely eleme
+	\end{itemize}
+
+    \noindent A levezetési fa nem minden esetben adja meg a levezetés során alkalmazott szabályok sorrendjét. Két levezetés lényegében azonos, ha csak a szabályok alkalmazásának sorrendjében különbözik.\\
+					
+    \noindent Egy környezetfüggetlen grammatika minden levezetési fája egy egyértelmű (egyetlen) legbaloldalibb levezetést határoz meg. A legbaloldalibb levezetés során minden levezetési lépésben a legbaloldalibb nemterminálist kell helyettesítenünk.\\
+
+	\noindent \textbf{Tétel}. Minden környezetfüggetlen grammatikáról eldönthető, hogy az általa generált nyelv az üres nyelv-e vagy sem.
+
+	\subsection*{Bar-Hillel Lemma}
+
+    \noindent Minden $L \in \mathcal{L}_2$ (környezetfüggetlen nyelvhez) meg tudunk adni két nyelvfüggő $p$ és $q$ egész konstanst ($p=p(L),\ q = q(L)$), amelyekre ha $u \in L$ és $|u| > p$, akkor $u-nak$ létezik a következő felbontása
+    \[
+        u = xyzvw \qquad (u,x,w,y,v \in T^*),\ \text{melyre}
+    \]
+	\begin{itemize}
+        \item $|yzv| \geq q$,
+        \item $|yv| > 0$,
+        \item $xy^{i}zv^{i}w \in L \qquad (\forall i \geq 0)$
+    \end{itemize}
+
+    \noindent A Bar-Hillel lemma azt mondja ki, hogy egy végtelen környezetfüggetlen nyelvben minden elég hosszú szóhoz végtelen sok "hasonló szerkezetű szó" van.\\
+
+    \noindent $G$ generált $L$ nyelv esetén, ha $|N| = l$, akkor $L$-beli szavak hossza legfeljebb $2^l$.\\
+	
+    \section*{Kiegészítés}
+
+    \begin{tabular}{l|c}
+        Minden környezet független nyelv felismerhető veremautomatával & $\checkmark$ \\ \hline \\
+        Minden környezet független nyelv felismerhető 1 veremmel & $\checkmark$ \\ \hline \\
+        Minden 3. típusú nyelv felismerhető VNDA-val & $\checkmark$ \\ \hline \\
+        Minden 0-veremautomata véges determinisztikus automata & $\checkmark$ \\ \hline \\
+        Minden rekurzív nyelv rekurzívan felsorolható & $\checkmark$ \\ \hline \\
+        Minden (kiterjesztett)3. típusú nyelvtan 1. típusú nyelvtan & \checkmark \\ \hline \\
+        Minden nyelvtannal leírt nyelv parciálisan rekurzív & \checkmark \\ \hline \\
+        Minden rekurzívan felsorolható nyelv parciálisan rekurzív & \checkmark \\ \hline \\
+        Minden Chomsky 1. típusú nyelv rekurzív nyelv & \checkmark \\ \hline \\
+        Minden Chomsky 2. típusú nyelv rekurzívan felsorolható nyelv & \checkmark \\ \hline \\
+        Minden Chomsky 2. típusú nyelv rekurzív nyelv & \checkmark \\ \hline \\
+        Minden parciálisan rekurzív nyelv környezet\-függő & $\bigotimes$ \\ \hline \\
+        Minden parciálisan rekurzív nyelv reguláris & $\bigotimes$ \\ \hline \\
+        Minden nyelvtannal leírt nyelv rekurzívan felsorolható & $\bigotimes$ \\ \hline \\
+        Minden nyelvtannal leírt nyelv reguláris & $\bigotimes$ \\ \hline \\
+        Minden nyelvtannal leírt nyelv rekurzív & $\bigotimes$ \\ \hline \\
+        Minden nyelvtannal leírt nyelv felismertethető VDA-val & $\bigotimes$ \\ \hline \\
+        Minden Chomsky 1. típusú nyelv felismerhető 1 veremmel & $\bigotimes$ \\ \hline \\
+        Minden Chomsky 1. típusú nyelv felismerhető VDA-val & $\bigotimes$ \\ \hline \\
+        Minden rekurzívan felsorolható nyelv reguláris & $\bigotimes$ \\ \hline
+    \end{tabular}
+
+\end{document} 
