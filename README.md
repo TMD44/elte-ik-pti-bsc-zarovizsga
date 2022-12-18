@@ -29,7 +29,7 @@ A záróvizsgázó hallgató a megadott tételjegyzékből véletlenszerűen hú
 
 ## Segíts javítani és bővíteni a tételkidolgozásokat!
 
-A `TODO.md`-ben találod a hiányosságokat, hibákat.
+Az [Issues](https://github.com/TMD44/elte-ik-pti-bsc-zarovizsga/issues) fülön találod a hiányosságokat, hibákat.
 
 Fejlesztés **VS Code**-al:
 
