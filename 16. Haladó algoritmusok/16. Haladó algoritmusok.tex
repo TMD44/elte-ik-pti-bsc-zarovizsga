@@ -29,8 +29,6 @@
 \begin{document}
 \maketitle
 
-TODO: Erősen hiányos!
-
 \begin{tetel}{Haladó algoritmusok}
     Elemi gráf algoritmusok: szélességi, mélységi bejárás és alkalmazásai. Minimális feszítőfák, általános algoritmus, Kruskal és Prim algoritmusai. Legrövidebb utak egy forrásból, sor alapú Bellman-Ford, Dijkstra, DAG legrövidebb út. Legrövidebb utak minden csúcspárra: Floyd-Warshall algoritmus. Gráf tranzitív lezártja.
 \end{tetel}
@@ -51,8 +49,9 @@ $G$ gráf (irányított/irányítatlan) $s$ startcsúcsából a távolság sorre
 A nyilvántartott csúcsokat egy sor adatszerkezetben tároljuk, az aktuális csúcs gyerekeit a sor-ba tesszük. A következő csúcs pedig a sor legelső eleme lesz.
 
 A csúcsok távolságát egy $d$, szüleiket egy $\pi$ tömbbe írjuk, és $\infty$ illetve $0$ értékekkel inicializáljuk.
-
+\begin{flushleft}
 Az algoritmus:
+\end{flushleft}
 \begin{enumerate}
     \item Az $s$ startcsúcsot betesszük a sorba
     \item A következő lépéseket addig ismételjük, míg a sor üres nem lesz
@@ -60,10 +59,17 @@ Az algoritmus:
     \item Azokat a gyerekcsúcsokat, melyeknek a távolsága nem $\infty$ figyelmen kívül hagyjuk (ezeken már jártunk)
     \item A többi gyerekre ($v$): beállítjuk a szülőjét ($\pi[v] = u$), és a távolságát ($d[v] = d[u]+1$). Majd berakjuk a sorba.
 \end{enumerate}
+Alkalmazásai
+\begin{enumerate}
+	\item Két $u$ és $v$ csomópont közötti legrövidebb út megkeresése, az út hosszát az élek számával mérve (előnye a mélységi kereséshez képest)
+	\item (Fordított) Cuthill–McKee-hálószámozás, a szélességi bejárás egy változata
+	\item Bináris fa szerializációja/deszerializációja versus szerializáció rendezett sorrendben; lehetővé teszi a fa hatékony újrakonstruálását
+	\item Egy páros gráf kétoldalúságának tesztelése
+\end{enumerate}
 \subsection{Minimális költségű utak keresése}
 \begin{description}
     \item[Dijkstra algoritmus] \hfill \\
-        Egy $G$ irányított, pozitív élsúlyokkal rendelkező gráfban keres $s$ startcsúcsból minimális költségű utakat minden csúcshoz.
+        Egy $G$ irányított vagy irányítatlan, pozitív élsúlyokkal rendelkező gráfban keres $s$ startcsúcsból minimális költségű utakat minden csúcshoz.
 
         Az algoritmus a szélességi bejárás módosított változata. Mivel itt egy hosszabb útnak lehet kisebb a költsége, mint egy rövidebbnek, egy már megtalált csúcsot nem szabad figyelmen kívül hagyni. Ezért minden csúcs rendelkezik három állapottal (nem elért, elért, kész). A $d$ és $\pi$ tömböket a szélességi bejáráshoz hasonlóan kezeljük.
 
@@ -88,18 +94,49 @@ Az algoritmus:
             \item Ha az $n$-edik iterációban is történt módosítás, negatív kör van a gráfban
         \end{enumerate}
 \end{description}
-\subsection{Minimális költség feszítőfa keresése}
-A Prim algoritmus egy irányítatlan élsúlyozott (akár negatív) gráf $s$ startcsúcsából keres minimális költségű feszítőfát. A $d$ és $\pi$ tömböket az előzőekhez hasonlóan kezeljük. Az algoritmus egy prioritásos sorba helyezi a csúcsokat.
+\subsection{Minimális költségű feszítőfa keresése}
+A minimális költségű feszítőfa vagy minimális feszítőfa egy összefüggő, irányítatlan gráfban található legkisebb élsúlyú feszítőfa. A feszítőfa egy olyan fa, ami a gráf összes csúcsát tartalmazza és élei az eredeti gráf élei közül valók. A minimális feszítőfa nem feltétlenül egyértelmű, de annak súlya igen. Egy gráf tetszőleges minimális feszítőfájának keresésére használható Kruskal és Prim algoritmusa. Mindkét algoritmus mohó stratégiát használ.
+\begin{description}
+	\item[Kruskal algoritmus] \hfill \\
+	   Az éleket súlyuk szerint növekvő sorrendbe rendezzük, és sorra megvizsgáljuk, hogy melyeket vehetjük be a megoldásba. Kezdetben a gráf minden csúcsa egy-egy halmazt alkot. Egy vizsgált él akkor kerül be a megoldásba, ha a két végpontja két különböző halmazban van, mert ebből tudjuk, hogy a vizsgált él hozzáadásával nem keletkezik kör a gráfban. Ekkor a két halmazt egyesítjük. Az algoritmus végére egyetlen halmaz fog maradni.
 
-Az algoritmus:
-\begin{enumerate}
-    \item A startcsúcs súlyát állítsuk be 0-ra.
-    \item A csúcsokat behelyezzük a prioritásos sorba.
-    \item A következő lépéseket addig végezzük, míg a prioritásos sor ki nem ürül.
-    \item Kiveszünk egy csúcsot ($u$) a sorból.
-    \item Minden gyerekére ($v$), amely még a sorban és a nyilvántartott $v$-be vezető él súlya nagyobb, mint a most megtalált: A $v$ szülőjét $u$-ra változtatjuk, a nyilvántartott súlyt felülírjuk $d[v] = d(u,v)$. Majd felülírjuk a $v$ állapotát a prioritásos sorban.
-    \item Azokkal a gyerekekkel, melyek nincsenek a sorban, vagy a súlyukon nem tudunk javítani, nem változtatunk.
-\end{enumerate}
+	  Az algoritmus:
+	  \begin{enumerate}
+		 \item Válasszuk ki a legkisebb súlyú élt.
+		 \item Amennyiben az él a részgráfhoz való hozzáadása kört alkot, dobjuk azt el, különben adjuk hozzá.
+		 \item Addig ismételjük a fenti lépéseket, amíg van meg nem vizsgált él.
+	  \end{enumerate}
+	  Alkalmazásai:
+	  \begin{enumerate}
+	  	 \item A Kruskal algoritmus annak a tételnek az egyszerű bizonyítására készült, hogy a minimális költségű feszítőfa egyértelmű, ha a gráfban nincs két azonos súlyú él.
+	  	 \item Véletlen labirintust lehet vele generálni. Ebben az esetben a feldolgozandó gráf minden élének súlya megegyezik, ezért nem kell az éleit rendezni.
+	  \end{enumerate}
+	\item[Prim algoritmus] \hfill \\
+	A Prim algoritmus egy irányítatlan élsúlyozott (akár negatív) gráf $s$ startcsúcsából keres minimális költségű feszítőfát. A $d$ és $\pi$ tömböket az előzőekhez hasonlóan kezeljük. Az algoritmus egy prioritásos sorba helyezi a csúcsokat.
+
+	Az algoritmus:
+	\begin{enumerate}
+	    \item A startcsúcs súlyát állítsuk be 0-ra.
+	    \item A csúcsokat behelyezzük a prioritásos sorba.
+	    \item A következő lépéseket addig végezzük, míg a prioritásos sor ki nem ürül.
+	    \item Kiveszünk egy csúcsot ($u$) a sorból.
+	    \item Minden gyerekére ($v$), amely még a sorban van és a nyilvántartott $v$-be vezető él súlya nagyobb, mint a most megtalált: A $v$ szülőjét $u$-ra változtatjuk, a nyilvántartott súlyt felülírjuk $d[v] = d(u,v)$. Majd felülírjuk a $v$ állapotát a prioritásos sorban.
+	    \item Azokkal a gyerekekkel, melyek nincsenek a sorban, vagy a súlyukon nem tudunk javítani, nem változtatunk.
+	\end{enumerate}
+
+$\textbf{MÁSKÉPP}$
+
+Működési elve, hogy csúcsonként haladva építi fel a fát, egy tetszőleges csúcsból kiindulva és minden egyes lépésben a lehető legolcsóbb élt keresi meg egy következő csúcshoz.
+
+	  Az algoritmus:
+	  \begin{enumerate}
+		\item Válasszuk ki a gráf egy tetszőleges csúcsát, legyen ez egy egycsúcsú fa.
+		\item Ameddig van az eredeti gráfnak olyan csúcsa, amelyik nincs benne a fában, addig ismételjük az alábbi lépéseket.
+		\item Válasszuk ki a fa csúcsai és a gráf többi csúcsa között futó élek közül a legkisebb súlyút.
+		\item A kiválasztott él nem fabeli csúcsát tegyük át a fába az éllel együtt.
+	  \end{enumerate}
+	  Alkalmazás: Ezt is lehet véletlen labirintus generálására használni.
+\end{description}
 \subsection{Mélységi bejárás}
 $G$ irányított (nem feltétlenül összefüggő) gráf mélységi bejárásával egy mélységi fát (erdőt) kapunk. Az algoritmus a következő:
 \begin{itemize}
@@ -116,6 +153,17 @@ A gráf éleit a mélységi bejárás közben osztályozhatjuk. (Inicializálás
     \item Keresztél: A következő csúcs mélységi száma nagyobb, mint 0, és befejezési száma is nagyobb, mint 0, továbbá az aktuális csúcs mélységi száma nagyobb, mint a következő csúcs mélységi száma. (Ekkor egy az aktuális csúcsot megelőző csúcsból induló, már megtalált útba mutató éllel van dolgunk)
     \item Előreél: A következő csúcs mélységi száma nagyobb, mint 0, és befejezési száma is nagyobb, mint 0, továbbá az aktuális csúcs mélységi száma kisebb, mint a következő csúcs mélységi száma. (Ekkor egy az aktuális csúcsból induló, már megtalált útba mutató éllel van dolgunk)
 \end{itemize}
+A mélységi bejárást építőelemként használó algoritmusok
+\begin{enumerate}
+	\item Gráf összefüggő komponensének keresése
+	\item Topológiai rendezés
+	\item 2- (él vagy csúcs) kapcsolt elemek keresése
+	\item 3- (él vagy csúcs) kapcsolt elemek megkeresése
+	\item Szeparáló élek megkeresése egy gráfban
+	\item Gráf erősen összefüggő komponenseinek keresése
+	\item Rejtvények megoldása csak egy megoldással, például labirintusokkal
+	\item A labirintus létrehozása véletlenszerűen elvégzett mélység-előzetes keresést használhat
+\end{enumerate}
 \subsection{DAG Topologikus rendezése}
 \begin{description}
     \item[Alapfogalmak] \hfill
@@ -130,12 +178,45 @@ A gráf éleit a mélységi bejárás közben osztályozhatjuk. (Inicializálás
                   \begin{itemize}
                       \item Ha $G$ gráfra a mélységi bejárás visszaélt talál (Azaz kört talált) $\Longrightarrow$ $G$ nem DAG
                       \item Ha $G$ nem DAG (van benne kör) $\Longrightarrow$ Bármely mélységi bejárás talál visszaélt
-                      \item Ha $G$-nek van topologikus rendezések $\Longrightarrow$ $G$ DAG
+                      \item Ha $G$-nek van topologikus rendezése $\Longrightarrow$ $G$ DAG
                       \item Minden DAG topologikusan rendezhető.
                   \end{itemize}
         \end{itemize}
     \item[DAG topologikus rendezése] \hfill \\
         Egy $G$ gráf mélységi bejárása során tegyük verembe azokat a csúcsokat, melyekből visszaléptünk. Az algoritmus után a verem tartalmát kiírva megkapjuk a gráf egy topologikus rendezését.
 \end{description}
+\subsection{Legrövidebb utak minden csúcspárra: Floyd-Warshall algoritmus}
 
+A csúcsok távolságát egy d, a szüleiket egy $\pi$ mátrixba írjuk, melyeket az előbbiekhez hasonlóan $\infty$ és 0 értékekkel inicializálunk. A végeredmény az lesz, hogy $d[i, j]$ az i indexű csúcsból a j indexű csúcsba vezető optimális út hossza, vagy $\infty$, ha nincs út i-ből j-be. $\pi[i, j]$ pedig az algoritmus által kiszámolt, az i indexű csúcsból a j indexű csúcsba vezető optimális úton a j csúcs közvetlen megelőzője, ha i $\ne$ j és létezik út i-ből j-be, különben $\pi[i, j]$ = 0.
+$\textbf{Az algoritmus leírása:}$
+
+Vegyünk egy $G$ gráfot, $V$ csúcsokkal 1-től $N$-ig számozva. Továbbá egy függvényt az ún. $\textbf{legrovidebbUtvonal(i,j,k)}$, amely visszatér a legrövidebb útvonallal $i$ és $j$ között adott csúcsok használatával: ${1,2,...,k}$ közbenső pontként a csúcsok mentén. Figyelembe véve az adott függvényt, a célünk az, hogy megtaláljuk a legrövidebb utat minden $i$-től $j$-ig bármelyik csúcs használatával ${1,2,...,N}$.
+A csúcspárok mindegyikénél a $\textbf{legrovidebbUtvonal(i,j,k)}$ lehet akár\\
+(1) egy útvonal, amely nem megy át $k$-n (amely csak az adott csúcsokat használja: ${1,...,k-1}$)\\
+VAGY\\
+(2) egy útvonal, amely végig megy $k$-n ($i$-től $k$-ig és aztán $k$-tól $j$-ig, mindkét esetben az adott közbenső csúcsokat használva: ${1,...,k-1}$).
+
+Tudjuk, hogy a legjobb útvonal $i$-től $j$-ig az, amely csak azon csúcsokat használja, amik $1$-en keresztül $k-1$-ig vannak meghatározva a $\textbf{legrovidebbUtvonal(i,j,k-1)}$ által, és egyértelmű, hogy ha jobb útvonal lenne $i$-től $k$-ig, majd onnan $j$-ig, akkor ezen útvonalaknak a hossza lenne a legrövidebb út láncolata az $i$-től a $k$-ig (csak a közbenső csúcsok használatával ${1,...,k-1}$) és a legrövidebb a $k$-tól $j$-ig (csak a közbenső csúcsok használatával ${1,...,k-1}$).
+
+Ha $\omega(i,j)$ az él súlya az adott $i$ és $j$ csúcsok között, akkor meghatározhatjuk a $\textbf{legrovidebbUtvonal(i,j,k)}$ függvényt a következő rekurzív képlet szerint:
+$\textbf{legrovidebbUtvonal(i,j,0)}$ = $\omega(i,j)$
+rekurzív eset:\\
+$\textbf{legrovidebbUtvonal(i,j,k) =}$\\
+$\textbf{min(legrovidebbUtvonal(i,j,k-1), legrovidebbUtvonal(i,k,k-1)}$ + $\textbf{legrovidebbUtvonal(k,j,k-1)}$).
+
+Ez a képlet a Floyd-Warshall algoritmus szive. Az algoritmus futása során először kiszámolja a\\
+$\textbf{legrovidebbUtvonal(i,j,k)}$ alapján az $(i,j)$ párokat a $k = 1$, majd $k = 2$ és így tovább esetekre. Ez a folyamat addig folytatódik, amíg végül $k = N$ teljesül és az N-edik iteráció is lefut, és megtaláltuk a legrövidebb utat mindegyik $(i,j)$ páros számára bármilyen közbenső csúcs használatával.
+
+\subsection{Gráf tranzitív lezártja}
+$\textbf{Első definíció:}$ A $G = (V, E)$ gráf tranzitív lezártja alatt a V × V $\supseteq$ T relációt értjük, ahol (u, v) $\in$ T, ha $G$-ben az u csúcsból elérhető a v csúcs.
+
+\begin{flushleft}
+$\textbf{Második definíció:}$ Egy $G = (V,E)$ irányított gráf tranzitív lezártja az a $G' =(V,E')$ gráf, amelyben u-ból v-be pontosan akkor vezet él, ha u-ból vezet irányított út v-be az eredeti $G$ gráfban.\\
+\end{flushleft}
+
+Minden irányított körmentes gráfhoz ($\textbf{DAG}$) megfeleltethető a csúcsai egy részbenrendezése, amelyben u $\le$ v pontosan akkor áll fenn, ha a gráfban létezik u-ból v-be menő irányított út. Ugyanakkor egy ilyen részbenrendezést sok különböző irányított körmentes gráf is reprezentálhat. Ezek közül a legkevesebb élt a tranzitív redukált, a legtöbbet a tranzitív lezárt tartalmazza.
+
+Egy gráf tranzitív lezártja könnyen kiszámítható pl. a Floyd-Warshall-algoritmussal O($n^{3}$) időben, illetve n szélességi kereséssel O(n(n+m)) időben. Ugyanakkor vannak lényegesen hatékonyabb módszerek is, amelyek a gyakorlatban majdnem lineáris időben futnak.
+
+Egy ilyen módszer az erősen összefüggő komponensek meghatározásán, valamint a komponensek gráfjának topologikus rendezésén alapul, de összetett adatszerkezeteket is alkalmaz.
 \end{document}
