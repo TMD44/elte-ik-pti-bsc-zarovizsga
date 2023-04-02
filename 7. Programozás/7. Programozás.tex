@@ -532,6 +532,47 @@ Megjegyzés: a felsorolás történhet másképpen is, például vektor esetén 
 \end{figure}
 
 \section{Programozási tételekkel készült programok tesztelése}
-TODO
+Három féle tesztelési stratégia van, ezek az alábbiak.
+\begin {enumerate}
+	\item Fekete doboz: a feladat (specifikációja) alapján felírt tesztesetek.
+		\begin {enumerate}
+			\item Az előfeltételt kielégítő (érvényes), illetve azt megszegő (érvénytelen)
+tesztadatokkal felírt tesztesetek.
+			\item Az utófeltétel alapján (?) generált tesztesetek vizsgálata.
+		\end {enumerate}
+	\item Fehér doboz: a kód alapján felírt tesztesetek.
+		\begin {enumerate}
+			\item Algoritmus minden utasításának kipróbálása
+			\item Algoritmus minden vezérlési csomópontjának (elágazás, ciklus) kipróbálása
+		\end {enumerate}
+	\item Szürke doboz: végrehajtható specifikáció által előrevetített algoritmus
+működését ellenőrző tesztesetek.
+		\begin {enumerate}
+			\item Ha a végrehajtható specifikáció ráadásul egy algoritmus-mintából származik,
+akkor az algoritmus-minta szokásos teszteseteit kell megvizsgálni.
+		\end {enumerate}
+\end {enumerate}
+A programozási tételek algoritmus-minták, ezért itt azok teszteseteivel fogunk foglalkozni.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{img/algoritmus-mintak_tesztesetei}
+    \caption{Algoritmus-minták tesztesetei}
+    \label{fig:algoritmus-mintak_tesztesetei}
+\end{figure}
+
+Példafeladat programozási tételre (programozási-mintára) építve:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{img/programozasi_tetelre_epulo_feladat}
+    \caption{Feladat programozási tételre építve}
+    \label{fig:programozasi_tetelre_epulo_feladat}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{img/tesztesetek}
+    \caption{Példa tesztesetek}
+    \label{fig:tesztesetek}
+\end{figure}
 
 \end{document}
