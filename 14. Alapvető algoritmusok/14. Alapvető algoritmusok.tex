@@ -144,11 +144,70 @@ Lemma: Az $n!$ levelet tartalmazó tökéletes fák közül azokra a legkisebb a
 Tétel: $AO_R(n) = \Omega(n\log{n})$.
 
 \section{Rendezés lineáris időben (bucket-, leszámláló- és radix rendezés)}
-TODO
+\subsection{Bucket rendezés}
+A bucket rendezés egy olyan rendezési algoritmus, amelyet általában egyenletesen elosztott értékekkel dolgozó adatsorok rendezésére használnak.
+\begin{itemize}
+    \item A bemeneti adatsorban meghatározunk egy tartományt vagy intervallumot, amelyben az értékek eloszlása közel azonos. Ez a tartomány általában a minimális és maximális érték közötti intervallum.
+    \item Létrehozunk egy vagy több "vödröt" vagy "bucketet", amelyek a tartományon belül helyezkednek el. A vödrök száma lehet állandó vagy változó, és attól függ, hogy milyen módon osztjuk el a tartományt.
+    \item Az adatokat a megfelelő vödrökbe helyezzük a kulcsuk alapján. Ez történhet például a kulcsérték egészrészének kiszámításával vagy a hash függvény segítségével.
+    \item Minden vödörben levő adatsort rendezünk. Ez a rendezési lépés lehet bármely más rendezési algoritmus alkalmazása, például beszúrási rendezés vagy gyorsrendezés.
+    \item Az egyes vödrökből származó rendezett adatsorokat összevonjuk, hogy előálljon a rendezett kimeneti adatsor.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/bucket.png}
+\end{figure}
+
+\subsection{Leszámláló rendezés}
+A leszámláló rendezés egy hatékony és stabil (az azonos értékű elemek sorrendjét megőrző) lineáris időkomplexitású rendezési algoritmus.
+\begin{itemize}
+    \item Először meghatározzuk a bemeneti adatsor legnagyobb és legkisebb értékét, hogy meghatározzuk a tartományt, amelyben az értékek eloszlanak. Ez a lépés szükséges ahhoz, hogy létrehozhassunk egy leszámláló tömböt, amely tartalmazza a különböző értékek előfordulási számát.
+    \item Létrehozunk egy leszámláló tömböt, amelynek mérete a tartomány méretével egyezik meg. A leszámláló tömb minden eleme kezdetben 0.
+    \item Végigmegyünk a bemeneti adatsoron, és minden elem előfordulását megszámoljuk a leszámláló tömbben. Az elemeket a leszámláló tömb indexével azonosítjuk.
+    \item A leszámláló tömbben frissítjük az elemek előfordulási számát azzal, hogy hozzáadjuk az előző elem előfordulási számát. Ez a lépés segít abban, hogy meghatározzuk az adott elem végleges helyét a rendezett adatsorban.
+    \item Végigmegyünk újra a bemeneti adatsoron, és minden elemet a leszámláló tömb alapján beszúrunk a rendezett adatsor megfelelő pozíciójába. Eközben a leszámláló tömbből csökkentjük az adott elem előfordulási számát, hogy kezeljük az esetleges azonos értékeket.
+    \item Az eredményül kapott rendezett adatsor a bemeneti adatsor rendezett változata.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/counting_sort.png}
+\end{figure}
+
+\subsection{Radix rendezés}
+A radix rendezés egy hatékony, stabil és nem összehasonlító rendezési algoritmus, amelyet általában egész számok rendezésére alkalmaznak.
+\begin{itemize}
+    \item Először meghatározzuk a bemeneti adatsor legnagyobb értékét. Ez szükséges ahhoz, hogy meghatározzuk, hány számjegyet kell figyelembe venni a rendezés során.
+    \item Kezdjük a rendezést a legkisebb számjegytől (legkevésbé jelentős) a legnagyobbig (legjelentősebb). Ez lehet az egységjegy, tizedesjegy, százalékjegy stb.
+    \item A bemeneti adatsort rendezzük a jelenlegi számjegy szerint. Ez általában egy stabilitást megőrző rendezési algoritmus, például beszúrási rendezés vagy leszámláló rendezés alkalmazásával történik.
+    \item A rendezett adatsort átrendezzük és elhelyezzük az eredményül kapott sorrendben. Ez a lépés a stabilitást biztosítja, hogy az azonos értékű elemek sorrendje ne változzon.
+    \item Ismételjük meg a 2-4 lépéseket az összes számjegyre, a legkevésbé jelentőstől a legjelentősebbig. Ezáltal az adatsorban a rendezés minden számjegy szerint megtörténik.
+    \item Az eredményül kapott rendezett adatsor a bemeneti adatsor rendezett változata.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/radix_example.png}
+    \caption{Példa, mivel jobban érthető mint az algo}
+\end{figure}
 
 \section{Adattömörítések}
 \subsection{Naiv adattömörítés}
-TODO
+A tömörítendő szöveget karakterenként, fix hosszúságú bitsorozatokkal kódoljuk.
+$\sum$ = $\sigma$ 1, $\sigma$2, . . . , $\sigma$i az ábécé.
+
+Egy-egy karakter $\lceil$lg d$\rceil$ bittel kódolható, ui. $\lceil$lg d$\rceil$ de biten 2
+\textsuperscript{$\lceil$lg d$\rceil$} de különböző bináris kód ábrázolható, és 2\textsuperscript{$\lceil$ lg d$\rceil$} $\geqslant$  d > 2\textsuperscript{$\lceil$ lg d$\rceil$-1}
+, azaz $\lceil$lg d$\rceil$ biten ábrázolható
+d-féle különböző kód, de eggyel kevesebb biten már nem.
+$In : \sum \langle \rangle$  a tömörítendő szöveg. n = |In| jelöléssel n * $\lceil$lg d$\rceil$ bittel kódolható.
+Pl. az ABRAKADABRA szövegre d = 5 és n = 11, ahonnét a tömörített
+kód hossza $11 * \lceil lg 5 \rceil = 11 * 3 = 33$ bit. (A 3-bites kódok közül tetszőleges 5
+kiosztható az 5 betűnek.) A tömörített fájl a kódtáblázatot is tartalmazza.
+A fenti ABRAKADABRA szöveg kódtáblázata lehet pl. a következő:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{img/naiv_table.png}
+\end{figure}
 
 \subsection{Huffman-algoritmus}
 A Huffman-algoritmussal való tömörítés lényege, hogy a gyakrabban előforduló elemeket (karaktereket) rövidebb, míg a ritkábban előfordulókar hosszabb kódszavakkal kódoljuk.
@@ -256,7 +315,19 @@ Az LZW (Lempel-Ziv-Welch) tömörítésnek a lényege, hogy egy szótárat bőv�
 \end{description}
 \section{Mintaillesztés}
 \subsection{Brute-force mintaillesztés}
-TODO
+A brute force algoritmus egy egyszerű, de nem mindig hatékony módszer, amelyet problémák megoldására alkalmaznak. A brute force megközelítés során az algoritmus minden lehetséges lehetőséget kipróbál a probléma megoldására, majd megtalálja a helyes eredményt.
+
+\begin{itemize}
+    \item Meghatározzuk a probléma lehetséges megoldási területét. Ez lehet egy adott adatsor, egy meghatározott intervallum, vagy egyéb feltétel alapján meghatározott értékek.
+    \item Generáljuk az összes lehetséges kombinációt vagy lehetőséget a megoldási területen. Ez lehet például egy iteráció, amely végigmegy minden lehetséges értéken vagy kombináción.
+    \item Ellenőrizzük minden lehetséges kombináció vagy lehetőség esetén, hogy az adott megoldás kielégíti-e a probléma feltételeit vagy kritériumait.
+    \item Tároljuk el a helyes megoldásokat, vagy válasszuk ki a legjobb eredményt a probléma alapján.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{img/brute_force.png}
+\end{figure}
 
 \subsection{Knuth-Morris-Pratt algoritmus}
 A Knuth-Morris-Pratt eljárásnak a Brute-Force (hasonlítsuk össze, toljunk egyet, stb..) módszerrel szemben az az előnye, hogy egyes esetekben, ha a mintában vannak ismétlődő elemek, akkor egy tolásnál akár több karakternyit is ugorhatunk.
