@@ -35,7 +35,7 @@ Fejlesztés **VS Code**-al:
 
 1. Tölts le és telepíts egy [LaTeX disztribúciót](https://www.latex-project.org/get/). Pl: [MiKTeX](https://miktex.org/download)
 2. Klónozd a repót és nyisd meg VS Code-al, majd telepítsd az ajánlott bővítményeket.
-3. Fordításnál telepítsd a felugró TeX bővítményeket is.
+3. Fordításnál telepítsd a felugró TeX bővítményeket is. (Szükség lehet a [perl](https://www.perl.org/)-re is, [choco](https://chocolatey.org/install)-val telepíthető: `choco install strawberryperl`)
 
 ---
 
